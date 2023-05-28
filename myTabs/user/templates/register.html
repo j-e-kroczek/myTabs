@@ -1,0 +1,98 @@
+<!--Register-->
+
+<!--Login-->
+
+{%extends "home.html" %} {% block content %} {% load static %}
+<div class="container h-100 d-flex align-items-center justify-content-center">
+  <div
+    class="row row-2 bg-white align-items-center shadow rounded-2 mb-lg-4 px-5 py-4"
+  >
+    <div class="p-lg-1 p-5 col-lg-6 col-12 text-center d-lg-inline d-none">
+      <img src="/static/images/login.png" alt="Login" class="img-fluid" />
+    </div>
+    <div class="p-1 col-lg-5 col-12 ms-auto">
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-dismissible alert-danger">
+        <strong>{{message}}</strong>
+      </div>
+      {% endfor %} {% endif %}
+      <h1 class="c-primary">Register</h1>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-floating my-3">
+          <input
+            name="username"
+            id="id_username"
+            class="w-100 form-control"
+            placeholder="Username"
+            required
+            type="text"
+          />
+          <label for="id_username">Username</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="email"
+            id="id_email"
+            class="w-100 form-control"
+            placeholder="E-mail"
+            required
+            type="text"
+          />
+          <label for="id_email">E-mail</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="password1"
+            id="id_password1"
+            class="w-100 form-control"
+            placeholder="Password"
+            required
+            type="password"
+          />
+          <label for="id_password1">Password</label>
+        </div>
+        <span id="error_weak_password"
+          >Must contain at least one number and one uppercase and lowercase
+          letter, and at least 8 or more characters</span
+        >
+        <div class="form-floating my-3">
+          <input
+            name="password2"
+            id="id_password2"
+            class="w-100 form-control"
+            placeholder="Confirm password"
+            required
+            type="password"
+          />
+          <label for="id_password2">Confirm password</label>
+        </div>
+        <span id="error_different_passwords"
+          >Passwords have to be identical</span
+        >
+        <button class="btn btn-primary px-5 py-2 border-0" type="submit">
+          Sign up
+        </button>
+      </form>
+      <p class="text-center my-3">
+        Already have an account?
+        <a class="c-teritary" href="/login">Sign in</a>.
+      </p>
+    </div>
+  </div>
+</div>
+<script src="/static/js/check-password.js"></script>
+
+{% endblock %} {% comment %} {%extends "home.html" %} {% block content %}
+<div class="container py-5">
+  <h1>Register</h1>
+  <form method="POST">
+    {% csrf_token %} {{ register_form }}
+    <button class="btn btn-primary" type="submit">Register</button>
+  </form>
+  <p class="text-center">
+    If you already have an account, <a href="/login">login</a> instead.
+  </p>
+</div>
+
+{% endblock %} {% endcomment %}
