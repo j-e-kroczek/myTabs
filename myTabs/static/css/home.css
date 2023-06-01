@@ -6,6 +6,10 @@
 }
 
 .bg-home {
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   background: rgb(22, 104, 161);
   background: linear-gradient(
     90deg,
@@ -17,10 +21,24 @@
   );
 }
 
-html,
+/* html {
+  min-height: 100%;
+} */
 body {
-  overflow: hidden;
   background-color: var(--white) !important;
+  min-height: 100vh;
+}
+
+.navbar {
+  background: rgb(22, 104, 161);
+  background: linear-gradient(
+    90deg,
+    rgba(22, 104, 161, 1) 0%,
+    rgba(38, 150, 154, 1) 36%,
+    rgba(40, 153, 153, 1) 46%,
+    rgba(41, 154, 153, 1) 62%,
+    rgba(95, 207, 127, 1) 100%
+  );
 }
 
 .bg-primary,

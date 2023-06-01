@@ -38,3 +38,6 @@ def logout_view(request):
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
 	return redirect("/")
+
+def profile_view(request):
+	return render(request=request, template_name="profile.html")
