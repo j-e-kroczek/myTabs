@@ -1,0 +1,139 @@
+<!--Login-->
+{%extends "home.html" %} {% block content %}  {% load static %} 
+<div class="container h-100 d-flex align-items-center justify-content-center">
+  <div class="row g-3 row-2 w-100 bg-white shadow rounded-2 mar-nav px-5 py-4">
+    {% if messages %} {% for message in messages %}
+    <div class="alert alert-dismissible alert-danger">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <strong>{{message}}</strong>
+    </div>
+    {% endfor %} {% endif %}
+    <div class="p-1 col-lg-6 col-12">
+      <h1 class="c-primary">Settings</h1>
+      <div class=>
+        {% csrf_token %}
+        <div class="row row-2 my-3 g-2">
+          <div class="col-md-4 col-12">Username:</div>
+          <div class="col-md-8 col-12">{{user.username}}</div>
+        </div>
+        <div class="row row-2 my-3 g-2">
+          <div class="col-md-4 col-12">E-mail:</div>
+          <div class="col-md-8 col-12">{{user.email}}</div>
+        </div>
+        <div class="row row-2 my-3 g-2">
+          <div class="col-md-4 col-12">Phone number:</div>
+          <div class="col-md-8 col-12">{{user.profile.phone_number}}</div>
+        </div>
+
+      </div>
+      <div class="btn-group-vertical mt-4" role="group" aria-label="Vertical radio toggle button group">
+        <input type="radio" class="btn-check" name="vbtn-radio" id="edit-profile-btn" autocomplete="off" checked>
+        <label class="btn btn-outline-secondary" for="edit-profile-btn">Edit profile</label>
+        <input type="radio" class="btn-check" name="vbtn-radio" id="edit-password-btn" autocomplete="off">
+        <label class="btn btn-outline-secondary" for="edit-password-btn">Change password</label>
+      </div>
+    </div>
+    <div class="p-1 col-lg-6 col-12" id='edit-profile'>
+      <h1 class="c-primary">Edit profile</h1>
+      <div method="POST">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row row-2 my-3 g-2">
+            <label class="my-auto col-md-4 col-12" for="id_username">Username:</label>
+            <div class="col-md-8 col-12">
+              <input
+                name="username"
+                id="id_username"
+                class="form-control"
+                placeholder="Username"
+                required
+                type="text"
+                value="{{user.username}}"
+              />
+            </div>
+          </div>
+          <div class="row row-2 my-3 g-2">
+            <label class="my-auto col-md-4 col-12" for="id_email">E-mail:</label>
+            <div class="col-md-8 col-12">
+              <input
+                name="email"
+                id="id_email"
+                class="form-control"
+                placeholder="E-mail"
+                required
+                type="text"
+                value="{{user.email}}"
+              />
+            </div>
+          </div>
+          <div class="row row-2 my-3 g-2">
+            <label class="my-auto col-md-4 col-12" for="phone_number">Phone number:</label>
+            <div class="col-md-8 col-12">
+              <input
+                name="phone-number"
+                id="phone_number"
+                class="form-control"
+                placeholder="Phone number"
+                required
+                type="text"
+                value="{{user.profile.phone_number}}"
+              />
+            </div>
+          </div>
+          <button class="btn btn-primary px-5 py-2 border-0" type="submit">
+            Save
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="p-1 col-lg-6 col-12" id='edit-password' style='display: none'>
+        <h1 class="c-primary">Change password</h1>
+        <div method="POST">
+          <form method="POST">
+            {% csrf_token %}
+            <div class="row row-2 my-3">
+              <label class="my-auto col-4" for="id_password1">New password:</label>
+              <div class="col-8">
+                <input
+                  name="new_password1"
+                  id="id_password1"
+                  class="form-control"
+                  placeholder="new password"
+                  required
+                  type="password"
+                />
+              </div>
+            </div>
+            <span id="error_weak_password"
+          >Must contain at least one number and one uppercase and lowercase
+          letter, and at least 8 or more characters</span>
+            <div class="row row-2 my-3">
+              <label class="my-auto col-4" for="id_password2">Confirm password:</label>
+              <div class="col-8">
+                <input
+                    name="new_password2"
+                    id="id_password2"
+                    class="form-control"
+                    placeholder="confirm password"
+                    required
+                    type="password"
+                />
+              </div>
+            </div>
+            <span id="error_different_passwords"
+          >Passwords have to be identical</span
+        >
+            <button class="btn mt-3 btn-primary px-5 py-2 border-0" type="submit">
+              Save
+            </button>
+          </form>
+        </div>
+      </div>
+  </div>
+</div>
+<script src="/static/js/check-password.js"></script>
+<script src="/static/js/profile-functions.js"></script>
+
+
+
+{% endblock %}

@@ -24,5 +24,7 @@ urlpatterns = [
     path('', tab_views.home_view, name='home_view'),
     path('register/', user_views.register_view, name='register_view'),
     path('login/', user_views.login_view, name='login_view'),
+    path('profile/', user_views.profile_view, name='profile_view'),
     path('logout/', user_views.logout_view, name='logout_view'),
+    
 ]
