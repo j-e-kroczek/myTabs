@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import SetPasswordForm
+from .models import Profile
 
 # Create your forms here.
 
@@ -23,3 +24,8 @@ class SetPasswordForm(SetPasswordForm):
     class Meta:
         model = User
         fields = ['password1', 'password2']
+        
+class NewProfileForm(forms.ModelForm):
+	class Meta:
+		model = Profile
+		fields = ['phone_number']

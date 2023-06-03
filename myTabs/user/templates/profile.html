@@ -20,6 +20,10 @@
           <div class="col-md-4 col-12">E-mail:</div>
           <div class="col-md-8 col-12">{{user.email}}</div>
         </div>
+        <div class="row row-2 my-3 g-2">
+          <div class="col-md-4 col-12">Phone number:</div>
+          <div class="col-md-8 col-12">{{user.profile.phone_number}}</div>
+        </div>
 
       </div>
       <div class="btn-group-vertical mt-4" role="group" aria-label="Vertical radio toggle button group">
@@ -41,7 +45,7 @@
                 name="username"
                 id="id_username"
                 class="form-control"
-                placeholder="username"
+                placeholder="Username"
                 required
                 type="text"
                 value="{{user.username}}"
@@ -55,10 +59,24 @@
                 name="email"
                 id="id_email"
                 class="form-control"
-                placeholder="e-mail"
+                placeholder="E-mail"
                 required
                 type="text"
                 value="{{user.email}}"
+              />
+            </div>
+          </div>
+          <div class="row row-2 my-3 g-2">
+            <label class="my-auto col-md-4 col-12" for="phone_number">Phone number:</label>
+            <div class="col-md-8 col-12">
+              <input
+                name="phone-number"
+                id="phone_number"
+                class="form-control"
+                placeholder="Phone number"
+                required
+                type="text"
+                value="{{user.profile.phone_number}}"
               />
             </div>
           </div>
