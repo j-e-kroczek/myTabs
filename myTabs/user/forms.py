@@ -18,7 +18,7 @@ class NewUserForm(UserCreationForm):
 		if commit:
 			user.save()
 		return user
-        
+
 class NewProfileForm(forms.ModelForm):
 	class Meta:
 		model = Profile
@@ -29,3 +29,4 @@ class EditProfileForm(forms.ModelForm):
 		model = User
 		fields = ['username', 'email']
 	phone_number = forms.CharField(max_length=15, required=False)
+
