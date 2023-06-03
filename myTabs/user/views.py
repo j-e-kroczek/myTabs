@@ -1,10 +1,11 @@
-from django.shortcuts import  render, redirect
-from .forms import NewUserForm
+from django.shortcuts import  render, redirect, get_object_or_404
+from .forms import NewUserForm, NewProfileForm, EditProfileForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm 
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.decorators import login_required
+from user.models import Profile
 
 def register_view(request):
 	if request.method == "POST":
@@ -46,11 +47,22 @@ def profile_view(request):
     user = request.user
     if request.method == 'POST':
         print(request.POST)
-        form = SetPasswordForm(user, request.POST)
-        if form.is_valid():
-            form.save()
+        profile_form = EditProfileForm(request.POST, instance=user)
+        password_form = SetPasswordForm(user, request.POST)
+        if password_form.is_valid():
+            password_form.save()
             messages.success(request, "Your password has been changed")
             return redirect('/login')
+        elif profile_form.is_valid():
+            print(profile_form.cleaned_data)
+            request.user.username = profile_form.cleaned_data['username']
+            request.user.email = profile_form.cleaned_data['email']
+            request.user.save()
+            profile = get_object_or_404(Profile, user=user)
+            profile.phone_number = profile_form.cleaned_data['phone_number']
+            profile.save()
+            messages.success(request, "Your profile data has been changed")
+            return redirect('/profile')
         else:
             for error in list(form.errors.values()):
                 messages.error(request, error)
