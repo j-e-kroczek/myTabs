@@ -1,6 +1,5 @@
 <!--Login-->
-{%extends "home.html" %} {% block content %}  {% load static %}
-
+{%extends "home.html" %} {% block content %}  {% load static %} 
 <div class="container h-100 d-flex align-items-center justify-content-center">
   <div class="row g-3 row-2 w-100 bg-white shadow rounded-2 mar-nav px-5 py-4">
     {% if messages %} {% for message in messages %}
@@ -75,10 +74,10 @@
           <form method="POST">
             {% csrf_token %}
             <div class="row row-2 my-3">
-              <label class="my-auto col-4" for="id_username">New password:</label>
+              <label class="my-auto col-4" for="id_password1">New password:</label>
               <div class="col-8">
                 <input
-                  name="password1"
+                  name="new_password1"
                   id="id_password1"
                   class="form-control"
                   placeholder="new password"
@@ -91,10 +90,10 @@
           >Must contain at least one number and one uppercase and lowercase
           letter, and at least 8 or more characters</span>
             <div class="row row-2 my-3">
-              <label class="my-auto col-4" for="id_email">Confirm password:</label>
+              <label class="my-auto col-4" for="id_password2">Confirm password:</label>
               <div class="col-8">
                 <input
-                    name="password2"
+                    name="new_password2"
                     id="id_password2"
                     class="form-control"
                     placeholder="confirm password"

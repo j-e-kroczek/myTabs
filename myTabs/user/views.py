@@ -3,6 +3,8 @@ from .forms import NewUserForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm 
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.decorators import login_required
 
 def register_view(request):
 	if request.method == "POST":
@@ -39,5 +41,18 @@ def logout_view(request):
 	messages.info(request, "You have successfully logged out.") 
 	return redirect("/")
 
+@login_required(login_url='/login')
 def profile_view(request):
-	return render(request=request, template_name="profile.html")
+    user = request.user
+    if request.method == 'POST':
+        print(request.POST)
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your password has been changed")
+            return redirect('/login')
+        else:
+            for error in list(form.errors.values()):
+                messages.error(request, error)
+    form = SetPasswordForm(user)
+    return render(request, template_name="profile.html", context={"form":form})
