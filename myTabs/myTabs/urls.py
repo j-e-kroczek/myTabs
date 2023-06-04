@@ -20,11 +20,17 @@ from tab import views as tab_views
 from user import views as user_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', tab_views.home_view, name='home_view'),
-    path('register/', user_views.register_view, name='register_view'),
-    path('login/', user_views.login_view, name='login_view'),
-    path('profile/', user_views.profile_view, name='profile_view'),
-    path('logout/', user_views.logout_view, name='logout_view'),
-    
+    path("admin/", admin.site.urls),
+    path("", tab_views.home_view, name="home_view"),
+    path("register/", user_views.register_view, name="register_view"),
+    path("login/", user_views.login_view, name="login_view"),
+    path("profile/", user_views.profile_view, name="profile_view"),
+    path("logout/", user_views.logout_view, name="logout_view"),
+    path(
+        "user_tabs_detail/",
+        tab_views.user_tabs_detail_view,
+        name="user_tabs_detail_view",
+    ),
+    path("tab/<int:tab_id>/", tab_views.tab_detail_view, name="tab_detail_view"),
+    path("tab/create/", tab_views.tab_create_view, name="tab_create_view"),
 ]

@@ -1,7 +1,9 @@
-<!--Login-->
 {%extends "home.html" %} {% block content %}  {% load static %} 
-<div class="container h-100 d-flex align-items-center justify-content-center">
-  <div class="row g-3 row-2 w-100 bg-white shadow rounded-2 mar-nav px-5 py-4">
+<div
+  class="container h-100 bg-white d-flex align-items-center shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-5 py-4">
     {% if messages %} {% for message in messages %}
     <div class="alert alert-dismissible alert-danger">
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>

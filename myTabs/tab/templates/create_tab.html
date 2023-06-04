@@ -1,0 +1,47 @@
+{%extends "home.html" %} {% block content %} {% load static %}
+<div
+  class="container h-100 bg-white d-flex shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-5 py-4">
+    {% if messages %} {% for message in messages %}
+    <div class="alert alert-dismissible alert-danger">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <strong>{{message}}</strong>
+    </div>
+    {% endfor %} {% endif %} {% include "user_tabs.html" %}
+    <div class="p-3 col-lg-10 col-12">
+      <h3 class="c-secondary">Create new tab</h3>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-floating my-3">
+          <input
+            name="name"
+            id="id_name"
+            class="w-100 form-control"
+            placeholder="Name"
+            required
+            type="text"
+          />
+          <label for="id_name">Name</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="description"
+            id="id_description"
+            class="w-100 form-control"
+            placeholder="Description"
+            type="text"
+          />
+          <label for="id_description">Description</label>
+        </div>
+        <button class="btn btn-primary px-5 py-2 border-0" type="submit">
+          Create
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
