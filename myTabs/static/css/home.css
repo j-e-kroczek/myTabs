@@ -74,6 +74,10 @@ body {
   background-color: var(--secondary) !important;
 }
 
+.bg-teritary {
+  background-color: var(--tertiary) !important;
+}
+
 .nav-link:hover {
   color: lightgrey;
 }

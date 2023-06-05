@@ -1,6 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .utils import get_user_tabs
+from .utils import (
+    get_user_tabs,
+    get_tab_users,
+    get_debts,
+    compute_balances,
+    simplify_minflow,
+    run_opt,
+    get_procent_balances,
+    get_tab_expenses,
+)
 from .models import Tab, Belonging
 from django.contrib import messages
 from .forms import NewTabForm, NewBelongingForm
@@ -11,9 +20,15 @@ def home_view(request):
     return render(request, "home.html")
 
 
+# @login_required(login_url="/login")
+# def user_tabs_view(request):
+#     context = {"user_tabs": get_user_tabs(request.user)}
+#     return render(request, template_name="user_tabs.html", context=context)
+
+
 @login_required(login_url="/login")
-def user_tabs_view(request):
-    context = {"user_tabs": get_user_tabs(request.user)}
+def balance_bars_view(request):
+    context = {"": get_user_tabs(request.user)}
     return render(request, template_name="user_tabs.html", context=context)
 
 
@@ -26,10 +41,25 @@ def user_tabs_detail_view(request):
 @login_required(login_url="/login")
 def tab_detail_view(request, tab_id):
     tab = get_object_or_404(Tab, pk=tab_id)
+    debts = get_debts(tab)
+    people = get_tab_users(tab)
+    balances = compute_balances(debts, people)
+    procent_balances = get_procent_balances(balances)
+    expenses = get_tab_expenses(tab)
+    opt = run_opt(debts, people)
+
     if not Belonging.objects.filter(user=request.user, tab=tab).exists():
         messages.error(request, "You do not have access to this tab.")
         return redirect("/user_tabs_detail")
-    context = {"tab": tab, "user_tabs": get_user_tabs(request.user)}
+    context = {
+        "tab": tab,
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": get_tab_users(tab),
+        "transactions": opt,
+        "balances": balances.items(),
+        "procent_balances": procent_balances,
+        "expenses": expenses.items,
+    }
     return render(request, template_name="tab_detail.html", context=context)
 
 
