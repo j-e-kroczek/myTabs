@@ -93,7 +93,7 @@
         <td>{{expense.date}}</td>
         <td>
           <i
-            data-target="#details{{expense.id}}"
+            data-target="#large_table_details{{expense.id}}"
             class="collapse-i bi bi-plus-square-fill c-primary"
             style="cursor: pointer"
           ></i>
@@ -101,7 +101,7 @@
       </tr>
       <tr>
         <td class="border-0 p-0" colspan="6">
-          <div class="collapse" id="details{{expense.id}}">
+          <div class="collapse" id="large_table_details{{expense.id}}">
             <div class="card border-0">
               <div class="card-body px-3 py-1">
                 {%for associating in associatings%}
