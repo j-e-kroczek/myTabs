@@ -1,0 +1,41 @@
+{% for user, amount, procent in procent_balances %} {% if amount >= 0 %}
+<div class="row row-2 p-1 g-2 align-items-center">
+  <div class="col-6 text-end">{{user}}</div>
+  <div class="col-6 h-100" style="position: relative">
+    <div
+      class="progress"
+      role="progressbar"
+      aria-label="Example 20px high"
+      aria-valuenow="{{amount}}"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="height: 20px; background-color: #bfbfbf"
+    >
+      <div class="w-100 text-center" style="position: absolute; color: white">
+        {{amount}} zł
+      </div>
+      <div class="progress-bar bg-success" style="width: {{procent}}%"></div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="row row-2 p-1 g-2 align-items-center">
+  <div class="col-6 h-100" style="position: relative">
+    <div
+      class="progress flex-row-reverse"
+      role="progressbar"
+      aria-label="Example 20px high"
+      aria-valuenow="{{amount}}"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="height: 20px; background-color: #bfbfbf"
+    >
+      <div class="w-100 text-center" style="position: absolute; color: white">
+        {{amount}} zł
+      </div>
+      <div class="progress-bar bg-danger" style="width: {{procent}}%"></div>
+    </div>
+  </div>
+  <div class="col-6 text-start">{{user}}</div>
+</div>
+{% endif %} {% endfor %}
