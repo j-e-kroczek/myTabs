@@ -1,0 +1,215 @@
+<div class="mb-4 w-100">
+  <div class="row row-2 align-items-center">
+    <div
+      class="col-md-4 col-12 btn-group my-4"
+      role="group"
+      aria-label="Vertical radio toggle button group"
+    >
+      <input
+        type="radio"
+        class="btn-check"
+        name="vbtn-radio"
+        id="equally-btn"
+        autocomplete="off"
+        checked
+      />
+      <label class="btn btn-outline-secondary" for="equally-btn">Equally</label>
+      <input
+        type="radio"
+        class="btn-check"
+        name="vbtn-radio"
+        id="advanced-btn"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-secondary" for="advanced-btn"
+        >Advanced</label
+      >
+    </div>
+    <div class="col-md-4 col-12" id="cost_left" style="display: none"></div>
+  </div>
+  {% for user in tab_users %}
+  <div class="form-check align-items-center d-flex">
+    <div class="col-0">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        name="checked_users"
+        checked
+        value="{{user.id}}"
+        id="check_{{user.id}}"
+        style="background-color: var(--tertiary); border-color: var(--tertiary)"
+      />
+    </div>
+    <label
+      class="row row-2 align-items-center form-check-label w-100"
+      for="check_{{user.id}}"
+    >
+      <div class="col-5">{{user.username}}</div>
+    </label>
+    <div class="col-7">
+      <input
+        class="form-control"
+        readonly
+        type="number"
+        step="0.01"
+        id="cost_{{user.id}}"
+        name="{{user.id}}"
+        value="0.00"
+      />
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  window.onload = function () {
+    var btn1 = document.getElementById("equally-btn");
+    var btn2 = document.getElementById("advanced-btn");
+
+    btn1.onclick = disable_inputs;
+    btn2.onclick = enable_inputs;
+
+    let timeout;
+
+    let cost = document.getElementById("id_cost");
+
+    function enable_inputs() {
+      divideCostAdvaced();
+      document.getElementById("cost_left").style.display = "block";
+      {% for user in tab_users %}
+      document.getElementById("cost_{{user.id}}").removeAttribute("readonly");
+      {% endfor %}
+    }
+
+    function disable_inputs() {
+      document.getElementById("cost_left").style.display = "none";
+      {% for user in tab_users %}
+      document.getElementById("cost_{{user.id}}").setAttribute("readonly", true);
+      {% endfor %}
+      divideCostEqually();
+    }
+
+
+      if (cost) {
+       cost.addEventListener("input", () => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => divideCostEqually(), 100);
+        });
+      }
+
+      let user_costs = [];
+      {% for user in tab_users %}
+      user_costs.push(document.getElementById("cost_{{user.id}}"));
+      {% endfor %}
+      console.log(user_costs)
+
+   {% for user in tab_users %}
+      document.getElementById("check_{{user.id}}").addEventListener("click", () => {
+        var checkbox = document.getElementById("check_{{user.id}}");
+        var cost = document.getElementById("cost_{{user.id}}");
+        if (checkbox.checked == false) {
+          checkbox.style.backgroundColor = "var(--white)";
+          checkbox.style.borderColor = "var(--gray)";
+        } else {
+          checkbox.style.backgroundColor = "var(--tertiary)";
+          checkbox.style.borderColor = "var(--tertiary)";
+        }
+        if(btn1.checked){
+          clearTimeout(timeout);
+          timeout = setTimeout(divideCostEqually, 100);
+        }
+        else{
+          clearTimeout(timeout);
+          timeout = setTimeout(divideCostAdvaced, 100);
+        }
+      });
+      document.getElementById("cost_{{user.id}}").addEventListener("change", (event) => {
+        if(btn1.checked){
+          clearTimeout(timeout);
+          timeout = setTimeout(divideCostEqually, 100);
+        }
+        else{
+          console.log(event.target.value)
+          cost = event.target.value;
+          if (cost == "" || cost < 0) {
+            cost = 0;
+          }
+          var cost = parseFloat(cost);
+          var cost = cost.toFixed(2);
+
+          console.log(cost);
+          event.target.value = cost;
+          clearTimeout(timeout);
+          timeout = setTimeout(divideCostAdvaced, 100);
+        }
+
+      });
+    {% endfor %}
+
+      function divideCostEqually() {
+        if(cost.value >= 0){
+          let total = cost.value;
+          let checked_users_costs = getCheckedUsersCost();
+          let nb_users = checked_users_costs.length;
+          let cost_per_user = (total / nb_users).toFixed(2);
+          let cost_per_user_rest = total - cost_per_user * nb_users;
+          console.log("cost: "+cost_per_user_rest);
+          for (let i = 0; i < nb_users; i++) {
+            {% comment %} if (i < cost_per_user_rest) {
+              checked_users_costs[i].value = cost_per_user + 1;
+            } else {
+              checked_users_costs[i].value = cost_per_user;
+            } {% endcomment %}
+            checked_users_costs[i].value = cost_per_user;
+          }
+        }
+      }
+
+      function divideCostAdvaced(){
+        let total = cost.value;
+        let checked_users_costs = getCheckedUsersCost();
+        let nb_users = checked_users_costs.length;
+        let current_sum = 0;
+
+        for (let i = 0; i < nb_users; i++) {
+          current_sum += parseFloat(checked_users_costs[i].value);
+        }
+
+        let cost_left = total - current_sum;
+        cost_left = cost_left.toFixed(2);
+        if (cost_left < 0) {
+          document.getElementById("cost_left").style.color = "green";
+          document.getElementById("cost_left").innerHTML = "Surplus of "+ (-1*cost_left) + "zł";
+        }
+        else if (cost_left == 0) {
+          document.getElementById("cost_left").style.color = "black";
+          document.getElementById("cost_left").innerHTML = "Costs are equal";
+        }
+        else{
+          document.getElementById("cost_left").style.color = "red";
+          document.getElementById("cost_left").innerHTML = "Shortage of "+ cost_left + "zł";
+        }
+      }
+
+      function getCheckedUsersCost(){
+        let checked_users = [];
+        {% for user in tab_users %}
+        if (document.getElementById("check_{{user.id}}").checked){
+          checked_users.push(document.getElementById("cost_{{user.id}}"));
+          if(btn1.checked){
+            document.getElementById("cost_{{user.id}}").setAttribute("readonly", true);
+          }
+          else{
+            document.getElementById("cost_{{user.id}}").removeAttribute("readonly");
+          }
+        }
+        else{
+          document.getElementById("cost_{{user.id}}").value = "0.00";
+          document.getElementById("cost_{{user.id}}").setAttribute("readonly", true);
+        }
+        {% endfor %}
+        return checked_users;
+      }
+
+    };
+</script>

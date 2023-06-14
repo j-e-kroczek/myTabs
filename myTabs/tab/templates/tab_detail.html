@@ -12,7 +12,33 @@
     {% endfor %} {% endif %} {% include "user_tabs.html" %}
     <div class="row row-2 col-lg-10 col-12 m-0">
       <div class="p-3 col-lg-9 col-12">
-        <h3 class="c-secondary">{{tab.name}}</h3>
+        <div class="row row-3 align-items-center">
+          <h3 class="c-secondary col-md-3 col-12">{{tab.name}}</h3>
+          <div
+            class="row row-2 col-md-9 col-12 d-flex justify-content-md-end justify-content-start my-2"
+          >
+            <button class="col-md-4 col-12 btn btn-primary px-4 py-1 border-0">
+              <a
+                href="/tab/{{tab.id}}/add_user"
+                class="text-decoration-none"
+                style="color: white"
+              >
+                <i class="bi bi-plus-circle"></i>{{" "}}Add user
+              </a>
+            </button>
+            <button
+              class="col-md-4 col-12 btn btn-primary px-4 py-1 border-0 ms-md-2 mt-md-0 mt-2"
+            >
+              <a
+                href="/tab/{{tab.id}}/remove_user"
+                class="text-decoration-none"
+                style="color: white"
+              >
+                <i class="bi bi-dash-circle"></i>{{" "}}Remove user
+              </a>
+            </button>
+          </div>
+        </div>
         <p class="m-0 c-secondary">Description: {{tab.description}}</p>
         <p class="m-0 c-secondary">Created at: {{tab.created_at}}</p>
         <div class="pt-4 row row-2 align-items-center">
@@ -21,17 +47,15 @@
             class="col-md-6 col-12 d-flex justify-content-md-end justify-content-start my-2"
           >
             <button class="btn btn-primary px-4 py-1 border-0">
-              <i class="bi bi-plus-circle"></i>{{" "}}New Expense
+              <a
+                href="/tab/{{tab.id}}/create_expense"
+                class="text-decoration-none"
+                style="color: white"
+              >
+                <i class="bi bi-plus-circle"></i>{{" "}}New Expense
+              </a>
             </button>
           </div>
-
-          {% comment %}
-          <div class="p-1 col-6">
-            <p class="c-secondary m-0 text-end pe-2">
-              <i class="bi bi-plus-circle"></i>{{" "}}New Expense
-            </p>
-          </div>
-          {% endcomment %}
         </div>
         <div class="col-lg-12">{% include "expenses_table.html" %}</div>
       </div>

@@ -82,7 +82,8 @@ body {
   color: lightgrey;
 }
 
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
   border-color: var(--tertiary) !important;
   box-shadow: 0 0 0 0.2rem rgba(95, 207, 127, 0.25) !important;
 }
@@ -91,4 +92,22 @@ body {
   .border-tab {
     border-right: 1px solid #dee2e6 !important;
   }
+}
+
+@media (min-width: 992px) {
+  .custom-overflow {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    max-height: 50vh !important;
+  }
+}
+
+.alert {
+  position: absolute;
+  z-index: 999;
+  top: calc(60px + 3vh);
+  left: 10vw;
+  right: 10vw;
+  width: calc(50% - 20vw);
+  height: 20vh;
 }

@@ -33,4 +33,19 @@ urlpatterns = [
     ),
     path("tab/<int:tab_id>/", tab_views.tab_detail_view, name="tab_detail_view"),
     path("tab/create/", tab_views.tab_create_view, name="tab_create_view"),
+    path(
+        "tab/<int:tab_id>/create_expense/",
+        tab_views.expense_create_view,
+        name="expense_create_view",
+    ),
+    path(
+        "tab/<int:tab_id>/add_user/",
+        tab_views.add_user_view,
+        name="add_user_view",
+    ),
+    path(
+        "tab/<int:tab_id>/remove_user/",
+        tab_views.remove_user_view,
+        name="remove_user_view",
+    ),
 ]

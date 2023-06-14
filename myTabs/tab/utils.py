@@ -1,21 +1,25 @@
-from tab.models import Belonging, Expense
+from tab.models import Belonging, Expense, ExpenseType
 from collections import defaultdict
 from tab.models import Tab, Associating, Belonging
 import sys
 import random
+from django.db.models import Q
 
 
 def get_user_tabs(user):
     user_tabs = []
-    for belonging in Belonging.objects.filter(user=user):
+    for belonging in Belonging.objects.filter(user=user, is_active=True):
         user_tabs.append(belonging.tab)
     return user_tabs
 
 
-def get_tab_users(tab):
+def get_tab_users(tab, active=False):
     tab_users = []
     for belonging in Belonging.objects.filter(tab=tab):
-        tab_users.append(belonging.user)
+        if active and belonging.is_active:
+            tab_users.append(belonging.user)
+        elif not active:
+            tab_users.append(belonging.user)
     return tab_users
 
 
@@ -37,6 +41,8 @@ def get_debts(tab):
 
 
 def compute_balances(debts, people):
+    if debts == []:
+        return {person: 0 for person in people}
     balances = {person: 0 for person in people}
     for debtor, creditor, value in debts:
         balances[debtor] -= value
@@ -51,7 +57,11 @@ def get_procent_balances(balances):
     result = []
     max_balance = max(abs_balances.values())
     for person, amount in balances.items():
-        result.append((person, amount, int(round(abs(amount) / max_balance, 2) * 100)))
+        if max_balance == 0:
+            procent = 0
+        else:
+            procent = int(round(abs(amount) / max_balance, 2) * 100)
+        result.append((person, amount, procent))
     return result
 
 
@@ -135,3 +145,7 @@ def get_tab_expenses(tab):
     for expense in expenses:
         result[expense] = Associating.objects.filter(expense=expense)
     return result
+
+
+def get_tab_expense_types(tab):
+    return ExpenseType.objects.filter(Q(tab=tab) | Q(is_private=False))

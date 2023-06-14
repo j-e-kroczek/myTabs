@@ -9,21 +9,19 @@ from .utils import (
     run_opt,
     get_procent_balances,
     get_tab_expenses,
+    get_tab_expense_types,
 )
-from .models import Tab, Belonging
+from .models import Tab, Belonging, Associating
 from django.contrib import messages
-from .forms import NewTabForm, NewBelongingForm
+from .forms import NewTabForm, NewBelongingForm, NewExpenseForm
+from user.views import get_user_from_name, get_user_from_id
+import datetime
+from django.contrib.auth.models import User
 
 
 # Create your views here.
 def home_view(request):
     return render(request, "home.html")
-
-
-# @login_required(login_url="/login")
-# def user_tabs_view(request):
-#     context = {"user_tabs": get_user_tabs(request.user)}
-#     return render(request, template_name="user_tabs.html", context=context)
 
 
 @login_required(login_url="/login")
@@ -48,7 +46,9 @@ def tab_detail_view(request, tab_id):
     expenses = get_tab_expenses(tab)
     opt = run_opt(debts, people)
 
-    if not Belonging.objects.filter(user=request.user, tab=tab).exists():
+    if not Belonging.objects.filter(
+        user=request.user, tab=tab, is_active=True
+    ).exists():
         messages.error(request, "You do not have access to this tab.")
         return redirect("/user_tabs_detail")
     context = {
@@ -90,3 +90,117 @@ def tab_create_view(request):
             "user_tabs": get_user_tabs(request.user),
         },
     )
+
+
+@login_required(login_url="/login")
+def expense_create_view(request, tab_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    print(request)
+    context = {
+        "tab": tab,
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": get_tab_users(tab, active=True),
+        "current_user": user,
+        "expense_types": get_tab_expense_types(tab),
+        "current_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+    }
+    if request.method == "POST":
+        expense_form = NewExpenseForm(request.POST)
+        checked_users = request.POST.getlist("checked_users")
+        cost = float(request.POST.get("cost"))
+        cost_per_user = round(cost / len(checked_users), 2)
+        cost_per_user_rest = cost - cost_per_user * len(checked_users)
+        sum = 0
+        for user_id in checked_users:
+            user_cost = request.POST.get(user_id)
+            sum += float(user_cost)
+        if expense_form.is_valid():
+            if sum != cost or sum != cost - round(cost_per_user_rest, 2):
+                messages.error(
+                    request, "Unsuccessful creation of expense. Invalid information."
+                )
+                redirect("/tab/" + str(tab_id) + "/")
+            else:
+                expense = expense_form.save(commit=False)
+                expense.tab = tab
+                expense.save()
+                for user_id in checked_users:
+                    user_cost = request.POST.get(user_id)
+                    if User.objects.filter(pk=user_id).exists():
+                        user = User.objects.get(pk=user_id)
+                    else:
+                        messages.error(
+                            request,
+                            "Unsuccessful creation of expense. Invalid information.",
+                        )
+                        expense.delete()
+                        return render(request, "create_expense.html", context=context)
+                    Associating.objects.create(
+                        user=user, expense=expense, cost=user_cost
+                    )
+
+                messages.success(request, "You have created a new expense.")
+                return redirect("/tab/" + str(tab_id) + "/")
+        messages.error(
+            request, "Unsuccessful creation of expense. Invalid information."
+        )
+    return render(request, "create_expense.html", context=context)
+
+
+@login_required(login_url="/login")
+def add_user_view(request, tab_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    print(request)
+    context = {
+        "tab": tab,
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": get_tab_users(tab),
+        "current_user": user,
+    }
+    if request.method == "POST":
+        added_user_name = request.POST.get("id_user")
+        added_user = get_user_from_name(added_user_name)
+        if added_user is None:
+            messages.error(request, "This user does not exist.")
+
+        elif Belonging.objects.filter(user=added_user.id, tab=tab).exists():
+            belonging = Belonging.objects.get(user=added_user.id, tab=tab)
+            if belonging.is_active:
+                messages.error(request, "This user is already in the tab.")
+            else:
+                belonging.is_active = True
+                belonging.save()
+                messages.success(request, "You have added a new user.")
+        else:
+            belonging_form = Belonging.objects.create(
+                tab=tab,
+                user=added_user,
+            )
+            belonging_form.save()
+            messages.success(request, "You have added a new user.")
+            return redirect("/tab/" + str(tab_id) + "/")
+    return render(request, "add_user_to_tab.html", context=context)
+
+
+@login_required(login_url="/login")
+def remove_user_view(request, tab_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    if request.method == "POST":
+        users_to_remove = request.POST.getlist("users_to_remove")
+        for user_to_remove in users_to_remove:
+            belongings = Belonging.objects.filter(user=user_to_remove, tab=tab)
+            for belonging in belongings:
+                belonging.is_active = False
+                belonging.save()
+        messages.success(request, "You have removed a user/users.")
+        redirect("/tab/" + str(tab_id) + "/")
+    context = {
+        "tab": tab,
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": get_tab_users(tab, active=True),
+        "current_user": user,
+    }
+    return render(request, "remove_user_from_tab.html", context=context)
