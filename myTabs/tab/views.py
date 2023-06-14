@@ -325,3 +325,33 @@ def expense_edit_view(request, tab_id, expense_id):
         messages.error(request, "Unsuccessful edition of expense. Invalid information.")
         print(expense_form.errors)
     return render(request, "edit_expense.html", context=context)
+
+
+@login_required(login_url="/login")
+def expense_remove_view(request, tab_id, expense_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    if not check_if_user_is_in_tab(user, tab):
+        return redirect("/404/")
+    expense = get_object_or_404(Expense, pk=expense_id)
+    associatings = Associating.objects.filter(expense=expense)
+    tab_users = get_tab_users(tab, active=True)
+    context = {
+        "tab": tab,
+        "expense": expense,
+        "associatings": associatings,
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": tab_users,
+        "expense_types": get_tab_expense_types(tab),
+    }
+
+    if request.method == "POST":
+        if "Yes" in request.POST:
+            for associating in associatings:
+                associating.delete()
+            expense.delete()
+            messages.success(request, "You have removed the expense.")
+            return redirect("/tab/" + str(tab_id) + "/")
+        elif "No" in request.POST:
+            return redirect("/tab/" + str(tab_id) + "/")
+    return render(request, "remove_expense.html", context=context)

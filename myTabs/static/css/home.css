@@ -104,11 +104,18 @@ body {
 }
 
 .alert {
-  position: absolute;
-  z-index: 999;
-  top: calc(60px + 3vh);
-  left: 10vw;
-  right: 10vw;
-  width: calc(50% - 20vw);
-  height: 20vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  width: calc(100% - 30px);
+  height: fit-content;
+  max-width: 300px;
+  max-height: 75vh;
+  z-index: 10;
+  border: 1px solid #a1a1a1;
+  margin: auto;
+  overflow-y: hidden;
 }
