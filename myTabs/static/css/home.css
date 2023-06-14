@@ -4,6 +4,7 @@
   --tertiary: rgba(95, 207, 127, 1);
   --white: white;
   --gray: gray;
+  --danger: #dc3545;
 }
 
 .bg-home {

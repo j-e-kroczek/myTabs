@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from tab import views as tab_views
 from user import views as user_views
+from django.conf.urls import handler404
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -47,5 +48,10 @@ urlpatterns = [
         "tab/<int:tab_id>/remove_user/",
         tab_views.remove_user_view,
         name="remove_user_view",
+    ),
+    path(
+        "tab/<int:tab_id>/edit_expense/<int:expense_id>/",
+        tab_views.expense_edit_view,
+        name="expense_edit_view",
     ),
 ]

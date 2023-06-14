@@ -40,7 +40,9 @@
           </div>
         </div>
         <p class="m-0 c-secondary">Description: {{tab.description}}</p>
-        <p class="m-0 c-secondary">Created at: {{tab.created_at}}</p>
+        <p class="m-0 c-secondary">
+          Created at: {{tab.created_at|date:"d.m.Y"}}
+        </p>
         <div class="pt-4 row row-2 align-items-center">
           <h3 class="c-secondary col-md-6 col-12">Expenses</h3>
           <div

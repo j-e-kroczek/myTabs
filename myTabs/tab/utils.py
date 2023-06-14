@@ -1,9 +1,20 @@
 from tab.models import Belonging, Expense, ExpenseType
-from collections import defaultdict
 from tab.models import Tab, Associating, Belonging
-import sys
-import random
 from django.db.models import Q
+import json
+import itertools
+
+
+def get_active_tab_users_json(tab_users):
+    users_data = []
+
+    for user in tab_users:
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+        }
+        users_data.append(user_data)
+    return json.dumps(users_data)
 
 
 def get_user_tabs(user):
@@ -104,9 +115,6 @@ def show_transactions(transactions):
             print(f"{creditor} owes {debtor} ${-value}")
 
 
-import itertools
-
-
 def find_zero_subset(balances):
     for i in range(1, len(balances)):
         for subset in itertools.combinations(balances.items(), i):
@@ -149,3 +157,7 @@ def get_tab_expenses(tab):
 
 def get_tab_expense_types(tab):
     return ExpenseType.objects.filter(Q(tab=tab) | Q(is_private=False))
+
+
+def check_if_user_is_in_tab(user, tab):
+    return Belonging.objects.filter(user=user, tab=tab, is_active=True).exists()

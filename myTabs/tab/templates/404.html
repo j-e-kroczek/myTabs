@@ -1,0 +1,20 @@
+<!--Login-->
+{%extends "home.html" %} {% block content %}
+
+<div
+  class="container h-100 d-flex justify-content-center align-items-center"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row row-2 bg-white align-items-center shadow rounded-2 px-5 py-4">
+    <div class="p-lg-1 p-5 col-lg-6 col-12 text-center d-lg-inline d-none">
+      <img src="/static/images/login.png" alt="Login" class="img-fluid" />
+    </div>
+    <div class="p-1 col-lg-5 col-12 ms-auto">
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-dismissible alert-danger">
+        <strong>{{message}}</strong>
+      </div>
+      {% endfor %} {% endif %}
+      <h1 class="c-primary">404 Page not found</h1
+    </div>>
+{% endblock %}

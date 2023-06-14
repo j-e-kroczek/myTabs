@@ -95,7 +95,7 @@ def get_user_from_name(name):
 
 
 def get_user_from_id(user_id):
-    if User.objects.filter(id=user_id).exists():
-        return User.objects.get(uid=user_id)
+    if User.objects.filter(pk=user_id).exists():
+        return User.objects.get(pk=user_id)
     else:
         return None
