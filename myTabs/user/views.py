@@ -56,7 +56,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect("/")
+    return redirect("/login/")
 
 
 @login_required(login_url="/login")

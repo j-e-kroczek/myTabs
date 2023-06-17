@@ -59,4 +59,9 @@ urlpatterns = [
         tab_views.expense_remove_view,
         name="expense_remove_view",
     ),
+    path(
+        "tab/<int:tab_id>/edit_tab/",
+        tab_views.tab_edit_view,
+        name="tab_edit_view",
+    ),
 ]

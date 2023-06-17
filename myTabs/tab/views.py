@@ -95,6 +95,33 @@ def tab_create_view(request):
 
 
 @login_required(login_url="/login")
+def tab_edit_view(request, tab_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    belongings = Belonging.objects.filter(tab=tab, is_active=True)
+    if not check_if_user_is_in_tab(user, tab):
+        return redirect("/404/")
+    if request.method == "POST":
+        tab_form = NewTabForm(request.POST)
+        if tab_form.is_valid():
+            tab.name = tab_form.cleaned_data["name"]
+            tab.description = tab_form.cleaned_data["description"]
+            tab.save()
+            messages.success(request, "You have edited the tab.")
+            return redirect("/tab/" + str(tab_id) + "/edit_tab/")
+        messages.error(request, "Unsuccessful edition of tab. Invalid information.")
+    return render(
+        request=request,
+        template_name="edit_tab.html",
+        context={
+            "user_tabs": get_user_tabs(request.user),
+            "belongings": belongings,
+            "tab": tab,
+        },
+    )
+
+
+@login_required(login_url="/login")
 def expense_create_view(request, tab_id):
     user = request.user
     tab = get_object_or_404(Tab, pk=tab_id)
@@ -128,7 +155,7 @@ def expense_create_view(request, tab_id):
                     request,
                     "Unsuccessful creation of expense. The sum of costs is not equal to the cost of the expense.",
                 )
-                redirect("/tab/" + str(tab_id) + "/")
+                return redirect("/tab/" + str(tab_id) + "/")
             else:
                 expense = expense_form.save(commit=False)
                 expense.tab = tab
@@ -182,6 +209,7 @@ def add_user_view(request, tab_id):
                 belonging.is_active = True
                 belonging.save()
                 messages.success(request, "You have added a new user.")
+                return redirect("/tab/" + str(tab_id) + "/edit_tab/")
         else:
             belonging_form = Belonging.objects.create(
                 tab=tab,
@@ -189,7 +217,7 @@ def add_user_view(request, tab_id):
             )
             belonging_form.save()
             messages.success(request, "You have added a new user.")
-            return redirect("/tab/" + str(tab_id) + "/")
+            return redirect("/tab/" + str(tab_id) + "/edit_tab/")
     return render(request, "add_user_to_tab.html", context=context)
 
 
@@ -206,8 +234,13 @@ def remove_user_view(request, tab_id):
             for belonging in belongings:
                 belonging.is_active = False
                 belonging.save()
+        active_tab_belongings = Belonging.objects.filter(tab=tab, is_active=True)
+        if len(active_tab_belongings) == 0:
+            tab.delete()
+            messages.success(request, "This tab has been deleted")
+            return redirect("/user_tabs_detail/")
         messages.success(request, "You have removed a user/users.")
-        redirect("/tab/" + str(tab_id) + "/")
+        return redirect("/tab/" + str(tab_id) + "/edit_tab/")
     context = {
         "tab": tab,
         "user_tabs": get_user_tabs(request.user),

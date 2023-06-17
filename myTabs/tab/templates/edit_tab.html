@@ -1,0 +1,78 @@
+{%extends "home.html" %} {% block content %} {% load static %}
+<div
+  class="container h-100 bg-white d-flex shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-xl-5 px-3 py-4">
+    {% include "user_tabs.html" %}
+    <div class="py-md-2 px-md-3 col-lg-10 col-12">
+      <h3 class="c-secondary">Edit tab</h3>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-floating my-3">
+          <input
+            name="name"
+            id="id_name"
+            class="w-100 form-control"
+            placeholder="Name"
+            required
+            type="text"
+            value="{{tab.name}}"
+          />
+          <label for="id_name">Name</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="description"
+            id="id_description"
+            class="w-100 form-control"
+            placeholder="Description"
+            type="text"
+            value="{{tab.description}}"
+          />
+          <label for="id_description">Description</label>
+        </div>
+        <button class="btn btn-primary px-5 py-2 border-0" type="submit">
+          Edit
+        </button>
+        <h5 class="c-secondary mt-3 mb-2">Users:</h5>
+        {%for belonging in belongings%}
+        <div class="row row-2 align-items-center col-12">
+          <i
+            class="fs-5 col-1 bi bi-person-fill"
+            style="width: fit-content; color: var(--tertiary)"
+          ></i>
+          <p class="mt-1 mb-0 col-8 h-100">{{belonging.user.username}}</p>
+        </div>
+        {%endfor%}
+      </form>
+      <div class="col-12 d-flex flex-column mt-4">
+        <button
+          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0"
+        >
+          <a
+            href="/tab/{{tab.id}}/add_user"
+            class="text-decoration-none"
+            style="color: white"
+          >
+            <i class="bi bi-plus-circle"></i>{{" "}}Add user
+          </a>
+        </button>
+        <button
+          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0 mt-2"
+        >
+          <a
+            href="/tab/{{tab.id}}/remove_user"
+            class="text-decoration-none"
+            style="color: white"
+          >
+            <i class="bi bi-dash-circle"></i>{{" "}}Remove user
+          </a>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
