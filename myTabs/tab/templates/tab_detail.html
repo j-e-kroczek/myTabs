@@ -3,35 +3,45 @@
   class="container h-100 bg-white d-flex mx-0 shadow rounded-2"
   style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
 >
-  <div class="row g-3 row-2 w-100 px-lg-5 px-2 py-4">
-    {% if messages %} {% for message in messages %}
-    <div class="alert alert-dismissible alert-danger">
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      <strong>{{message}}</strong>
-    </div>
-    {% endfor %} {% endif %} {% include "user_tabs.html" %}
+  <div class="row g-3 row-2 w-100 px-xl-5 px-3 py-4">
+    {% include "user_tabs.html" %}
     <div class="row row-2 col-lg-10 col-12 m-0">
-      <div class="p-3 col-lg-9 col-12">
-        <h3 class="c-secondary">{{tab.name}}</h3>
+      <div class="py-md-3 px-md-3 col-lg-9 col-12">
+        <div class="row row-2 align-items-center">
+          <h3 class="c-secondary col-lg-6 col-12">{{tab.name}}</h3>
+          <div
+            class="d-flex justify-content-lg-end justify-content-start mb-lg-0 mb-3 col-lg-6 col-12"
+          >
+            <button class="btn btn-primary px-4 py-1 border-0">
+              <a
+                href="/tab/{{tab.id}}/edit_tab"
+                class="text-decoration-none"
+                style="color: white"
+              >
+                <i class="bi bi-pencil-square"></i>{{" "}}Edit Tab
+              </a>
+            </button>
+          </div>
+        </div>
         <p class="m-0 c-secondary">Description: {{tab.description}}</p>
-        <p class="m-0 c-secondary">Created at: {{tab.created_at}}</p>
+        <p class="m-0 c-secondary">
+          Created at: {{tab.created_at|date:"d.m.Y"}}
+        </p>
         <div class="pt-4 row row-2 align-items-center">
           <h3 class="c-secondary col-md-6 col-12">Expenses</h3>
           <div
             class="col-md-6 col-12 d-flex justify-content-md-end justify-content-start my-2"
           >
             <button class="btn btn-primary px-4 py-1 border-0">
-              <i class="bi bi-plus-circle"></i>{{" "}}New Expense
+              <a
+                href="/tab/{{tab.id}}/create_expense"
+                class="text-decoration-none"
+                style="color: white"
+              >
+                <i class="bi bi-plus-circle"></i>{{" "}}New Expense
+              </a>
             </button>
           </div>
-
-          {% comment %}
-          <div class="p-1 col-6">
-            <p class="c-secondary m-0 text-end pe-2">
-              <i class="bi bi-plus-circle"></i>{{" "}}New Expense
-            </p>
-          </div>
-          {% endcomment %}
         </div>
         <div class="col-lg-12">{% include "expenses_table.html" %}</div>
       </div>

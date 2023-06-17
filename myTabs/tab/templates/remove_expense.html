@@ -1,0 +1,123 @@
+{%extends "home.html" %} {% block content %} {% load static %}
+
+<div
+  class="container h-100 bg-white d-flex align-items-center shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-md-5 px-1 py-4">
+    {% include "user_tabs.html" %}
+    <div class="p-3 col-lg-10 col-12 m-0">
+      <h3 class="c-secondary">{{tab.name}}</h3>
+      <p class="m-0 c-secondary">Description: {{tab.description}}</p>
+      <p class="m-0 c-secondary">Created at: {{tab.created_at|date:'Y-m-d'}}</p>
+      <h3 class="c-secondary mt-2">Remove expense</h3>
+
+      <div class="custom-overflow">
+        {% csrf_token %}
+        <div class="form-floating my-3">
+          <input
+            name="name"
+            id="id_name"
+            class="w-100 form-control"
+            placeholder="Name"
+            disabled
+            type="text"
+            value="{{expense.name}}"
+          />
+          <label for="id_name">Name</label>
+        </div>
+
+        <div class="form-floating my-3">
+          <input
+            type="text"
+            name="buyer"
+            id="id_buyer"
+            class="w-100 form-control"
+            type="text"
+            disabled
+            value="{{expense.buyer.username}}"
+          />
+          <label for="id_buyer">Buyer</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            type="text"
+            name="type"
+            id="id_type"
+            class="w-100 form-control"
+            type="text"
+            disabled
+            value="{{expense.type.name}}"
+          />
+          <label for="id_type">Type</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            type="number"
+            step="0.01"
+            name="cost"
+            id="id_cost"
+            class="w-100 form-control"
+            type="text"
+            disabled
+            value="{{expense.cost}}"
+          />
+          <label for="id_cost">Cost</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="date"
+            id="id_date"
+            class="w-100 form-control"
+            type="date"
+            value="{{expense.date|date:'Y-m-d'}}"
+            disabled
+          />
+          <label for="id_date">Date</label>
+        </div>
+        <div class="my-3 mx-1">
+          {% for associating in associatings %}
+          <div class="my-1 align-items-center d-flex">
+            <label
+              class="row row-2 align-items-center form-check-label w-100"
+              for="check_{{associating.user.id}}"
+            >
+              <div class="col-5">{{associating.user.username}}</div>
+            </label>
+            <div class="col-7">
+              <input
+                class="form-control"
+                disabled
+                type="number"
+                step="0.01"
+                id="cost_{{associating.user.id}}"
+                name="{{associating.user.id}}"
+                value="{{associating.cost}}"
+              />
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <h5 class="mx-1 text-danger mt-5">
+          Are you sure you want to delete this expense?
+        </h5>
+        <form action="" method="POST">
+          {% csrf_token %}
+          <input
+            class="col-md-2 col-5 btn btn-primary px-3 py-1 border-0"
+            type="submit"
+            name="Yes"
+            value="Yes"
+          />
+          <input
+            class="col-md-2 col-5 ms-2 mt-0 btn btn-primary px-3 py-1 border-0"
+            type="submit"
+            name="No"
+            value="No"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

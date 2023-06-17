@@ -1,9 +1,11 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");
 :root {
   --primary: rgba(38, 150, 154, 1);
   --secondary: rgba(22, 104, 161, 1);
   --tertiary: rgba(95, 207, 127, 1);
   --white: white;
   --gray: gray;
+  --danger: #dc3545;
 }
 
 .bg-home {
@@ -82,7 +84,8 @@ body {
   color: lightgrey;
 }
 
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
   border-color: var(--tertiary) !important;
   box-shadow: 0 0 0 0.2rem rgba(95, 207, 127, 0.25) !important;
 }
@@ -91,4 +94,33 @@ body {
   .border-tab {
     border-right: 1px solid #dee2e6 !important;
   }
+}
+
+@media (min-width: 992px) {
+  .custom-overflow {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    max-height: 50vh !important;
+  }
+}
+
+.alert {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  width: calc(100% - 30px);
+  height: fit-content;
+  max-width: 300px;
+  max-height: 75vh;
+  z-index: 10;
+  border: 1px solid #a1a1a1;
+  margin: auto;
+  overflow-y: hidden;
+}
+
+.c-list {
+  list-style: none;
 }

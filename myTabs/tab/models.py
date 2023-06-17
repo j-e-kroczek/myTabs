@@ -22,6 +22,7 @@ class Belonging(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tab = models.ForeignKey(Tab, on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.tab}"

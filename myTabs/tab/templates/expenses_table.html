@@ -17,6 +17,24 @@
             class="collapse-i bi bi-plus-square-fill c-primary"
             style="cursor: pointer"
           ></i>
+          <a
+            href="/tab/{{tab.id}}/edit_expense/{{expense.id}}"
+            class="text-decoration-none"
+          >
+            <i
+              class="bi bi-pencil-square text-warning"
+              style="cursor: pointer"
+            ></i>
+          </a>
+          <a
+            href="/tab/{{tab.id}}/remove_expense/{{expense.id}}"
+            class="text-decoration-none"
+          >
+            <i
+              class="bi bi-dash-square-fill text-danger"
+              style="cursor: pointer"
+            ></i>
+          </a>
         </td>
       </tr>
       <tr>
@@ -37,7 +55,7 @@
                     <p class="p-1 mb-0">Type:</p>
                   </div>
                   <div class="col-8">
-                    <p class="p-1 mb-0">{{expense.type}}</p>
+                    <p class="p-1 mb-0">{{expense.type.name}}</p>
                   </div>
                 </div>
                 <div class="row align-items-center text-light bg-primary">
@@ -45,7 +63,7 @@
                     <p class="p-1 mb-0">Date:</p>
                   </div>
                   <div class="col-8">
-                    <p class="p-1 mb-0">{{expense.date}}</p>
+                    <p class="p-1 mb-0">{{expense.date|date:"d.m.Y"}}</p>
                   </div>
                 </div>
                 {%for associating in associatings%}
@@ -90,13 +108,31 @@
         <td>{{expense.cost}} zł</td>
         <td>{{expense.buyer}}</td>
         <td>{{expense.type.name}}</td>
-        <td>{{expense.date}}</td>
+        <td>{{expense.date|date:"d.m.Y"}}</td>
         <td>
           <i
             data-target="#large_table_details{{expense.id}}"
             class="collapse-i bi bi-plus-square-fill c-primary"
             style="cursor: pointer"
           ></i>
+          <a
+            href="/tab/{{tab.id}}/edit_expense/{{expense.id}}"
+            class="text-decoration-none"
+          >
+            <i
+              class="bi bi-pencil-square text-warning"
+              style="cursor: pointer"
+            ></i>
+          </a>
+          <a
+            href="/tab/{{tab.id}}/remove_expense/{{expense.id}}"
+            class="text-decoration-none"
+          >
+            <i
+              class="bi bi-dash-square-fill text-danger"
+              style="cursor: pointer"
+            ></i>
+          </a>
         </td>
       </tr>
       <tr>
@@ -148,7 +184,7 @@
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    var collapseButtons = document.querySelectorAll(".collapse-i");
+    var collapseButtons = document.querySelectorAll(".collapse-i ");
 
     collapseButtons.forEach(function (button) {
       button.addEventListener("click", function () {
