@@ -1,10 +1,10 @@
 {%extends "home.html" %} {% block content %}  {% load static %} 
 <div
-  class="container h-100 bg-white d-flex align-items-center shadow rounded-2"
+  class="container h-100 bg-white d-flex shadow rounded-2"
   style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
 >
-  <div class="row g-3 row-2 w-100 px-5 py-4">
-    <div class="p-1 col-lg-6 col-12">
+  <div class="row g-3 row-2 w-100 px-xl-5 px-3 py-4">
+    <div class="py-3 px-1 col-lg-6 col-12">
       <h1 class="c-primary">Settings</h1>
       <div class=>
         {% csrf_token %}
@@ -22,7 +22,7 @@
         </div>
 
       </div>
-      <div class="btn-group-vertical mt-4" role="group" aria-label="Vertical radio toggle button group">
+      <div class="btn-group mt-4" role="group" aria-label="radio toggle button group">
         <input type="radio" class="btn-check" name="vbtn-radio" id="edit-profile-btn" autocomplete="off" checked>
         <label class="btn btn-outline-secondary" for="edit-profile-btn">Edit profile</label>
         <input type="radio" class="btn-check" name="vbtn-radio" id="edit-password-btn" autocomplete="off">

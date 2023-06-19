@@ -5,7 +5,7 @@
 >
   <div class="row g-3 row-2 w-100 px-xl-5 px-3 py-4">
     {% include "user_tabs.html" %}
-    <div class="py-md-2 px-md-3 col-lg-10 col-12">
+    <div class="py-md-3 px-lg-3 p-1 m-0 col-lg-10 col-12">
       <h3 class="c-secondary">Edit tab</h3>
 
       <form method="POST">
@@ -49,26 +49,16 @@
       </form>
       <div class="col-12 d-flex flex-column mt-4">
         <button
-          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0"
+          onclick="location.href='/tab/{{tab.id}}/add_user'"
+          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0 mt-2 text-white"
         >
-          <a
-            href="/tab/{{tab.id}}/add_user"
-            class="text-decoration-none"
-            style="color: white"
-          >
-            <i class="bi bi-plus-circle"></i>{{" "}}Add user
-          </a>
+          <i class="bi bi-plus-circle"></i>{{" "}}Add user
         </button>
         <button
-          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0 mt-2"
+          onclick="location.href='/tab/{{tab.id}}/remove_user'"
+          class="col-lg-3 col-md-4 col-12 btn btn-primary px-3 py-1 border-0 mt-2 text-white"
         >
-          <a
-            href="/tab/{{tab.id}}/remove_user"
-            class="text-decoration-none"
-            style="color: white"
-          >
-            <i class="bi bi-dash-circle"></i>{{" "}}Remove user
-          </a>
+          <i class="bi bi-dash-circle"></i>{{" "}}Remove user
         </button>
       </div>
     </div>

@@ -1,0 +1,16 @@
+<div class="py-3 d-flex align-items-center">
+  <h3
+    class="mt-1 mb-1 c-secondary justify-content-lg-end justify-content-start me-xl-5 me-4"
+  >
+    Balance
+  </h3>
+  <div class="d-flex">
+    <button
+      onclick="location.href='/tab/{{tab.id}}/reimbursement'"
+      class="btn btn-primary px-4 py-1 border-0 text-white"
+    >
+      <i class="bi bi-cash-coin"></i>
+    </button>
+  </div>
+</div>
+{% include "balance_bars.html" %}

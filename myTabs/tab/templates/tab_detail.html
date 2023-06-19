@@ -3,23 +3,20 @@
   class="container h-100 bg-white d-flex mx-0 shadow rounded-2"
   style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
 >
-  <div class="row g-3 row-2 w-100 px-xl-5 px-3 py-4">
+  <div class="row g-3 row-2 w-100 px-xl-5 ps-3 py-4">
     {% include "user_tabs.html" %}
-    <div class="row row-2 col-lg-10 col-12 m-0">
-      <div class="py-md-3 px-md-3 col-lg-9 col-12">
+    <div class="row row-2 col-lg-10 col-12 m-0 p-0">
+      <div class="py-md-3 px-lg-3 p-1 col-lg-9 col-12">
         <div class="row row-2 align-items-center">
-          <h3 class="c-secondary col-lg-6 col-12">{{tab.name}}</h3>
+          <h3 class="c-secondary mt-md-0 mt-3 col-lg-6 col-12">{{tab.name}}</h3>
           <div
             class="d-flex justify-content-lg-end justify-content-start mb-lg-0 mb-3 col-lg-6 col-12"
           >
-            <button class="btn btn-primary px-4 py-1 border-0">
-              <a
-                href="/tab/{{tab.id}}/edit_tab"
-                class="text-decoration-none"
-                style="color: white"
-              >
-                <i class="bi bi-pencil-square"></i>{{" "}}Edit Tab
-              </a>
+            <button
+              onclick="location.href='/tab/{{tab.id}}/edit_tab'"
+              class="btn btn-primary px-4 py-1 border-0 text-white"
+            >
+              <i class="bi bi-pencil-square"></i>{{" "}}Edit Tab
             </button>
           </div>
         </div>
@@ -27,30 +24,48 @@
         <p class="m-0 c-secondary">
           Created at: {{tab.created_at|date:"d.m.Y"}}
         </p>
+        <div class="col-lg-3 col-12" id="small_balance">
+          {% include "balance_component.html" %}
+        </div>
         <div class="pt-4 row row-2 align-items-center">
           <h3 class="c-secondary col-md-6 col-12">Expenses</h3>
           <div
             class="col-md-6 col-12 d-flex justify-content-md-end justify-content-start my-2"
           >
-            <button class="btn btn-primary px-4 py-1 border-0">
-              <a
-                href="/tab/{{tab.id}}/create_expense"
-                class="text-decoration-none"
-                style="color: white"
-              >
-                <i class="bi bi-plus-circle"></i>{{" "}}New Expense
-              </a>
+            <button
+              onclick="location.href='/tab/{{tab.id}}/create_expense'"
+              class="btn btn-primary px-4 py-1 border-0 text-white"
+            >
+              <i class="bi bi-plus-circle"></i>{{" "}}New Expense
             </button>
           </div>
         </div>
         <div class="col-lg-12">{% include "expenses_table.html" %}</div>
       </div>
-      <div class="p-3 col-lg-3 col-12">
-        <h3 class="c-secondary">Balance</h3>
-        {% include "balance_bars.html" %}
+      <div class="col-lg-3 col-12" id="large_balance">
+        {% include "balance_component.html" %}
       </div>
     </div>
   </div>
 </div>
-
+<script>
+  small_balance = document.getElementById("small_balance");
+  large_balance = document.getElementById("large_balance");
+  balance_html = large_balance.innerHTML;
+  function showBalance() {
+    if (screen.width < 992) {
+      small_balance.style.display = "block";
+      large_balance.style.display = "none";
+      small_balance.innerHTML = balance_html;
+      large_balance.innerHTML = "";
+    } else {
+      small_balance.style.display = "none";
+      large_balance.style.display = "block";
+      small_balance.innerHTML = "";
+      large_balance.innerHTML = balance_html;
+    }
+  }
+  window.addEventListener("load", showBalance);
+  window.addEventListener("resize", showBalance);
+</script>
 {% endblock %}

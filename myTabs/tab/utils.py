@@ -86,8 +86,7 @@ def simplify_minflow(debts, people):
         (debtor, debt) = next(iter(debtors.items()))
         (creditor, credit) = next(iter(creditors.items()))
         amount = min(-debt, credit)
-        transactions.append((debtor, creditor, amount))
-
+        transactions.append((debtor, creditor, "{:.2f}".format(amount)))
         creditors[creditor] -= amount
         debtors[debtor] += amount
         if creditors[creditor] == 0:
