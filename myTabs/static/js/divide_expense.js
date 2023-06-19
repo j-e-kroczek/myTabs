@@ -11,9 +11,6 @@ window.onload = function () {
   let timeout;
 
   let cost = document.getElementById("id_cost");
-  for (let i = 0; i < tabUsers.length; i++) {
-    console.log(tabUsers[i].id);
-  }
   function enable_inputs() {
     divideCostAdvaced();
     document.getElementById("cost_left").style.display = "block";
@@ -45,7 +42,6 @@ window.onload = function () {
   for (let i = 0; i < tabUsers.length; i++) {
     user_costs.push(document.getElementById("cost_" + tabUsers[i].id));
   }
-  console.log(user_costs);
 
   for (let i = 0; i < tabUsers.length; i++) {
     document
@@ -75,15 +71,12 @@ window.onload = function () {
           clearTimeout(timeout);
           timeout = setTimeout(divideCostEqually, 100);
         } else {
-          console.log(event.target.value);
           cost = event.target.value;
           if (cost == "" || cost < 0) {
             cost = 0;
           }
           var cost = parseFloat(cost);
           var cost = cost.toFixed(2);
-
-          console.log(cost);
           event.target.value = cost;
           clearTimeout(timeout);
           timeout = setTimeout(divideCostAdvaced, 100);
@@ -98,7 +91,7 @@ window.onload = function () {
       let nb_users = checked_users_costs.length;
       let cost_per_user = (total / nb_users).toFixed(2);
       let cost_per_user_rest = total - cost_per_user * nb_users;
-      console.log("cost: " + cost_per_user_rest);
+
       for (let i = 0; i < nb_users; i++) {
         checked_users_costs[i].value = cost_per_user;
       }

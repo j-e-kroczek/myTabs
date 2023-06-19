@@ -24,6 +24,8 @@ from .utils import get_active_tab_users_json, check_if_user_is_in_tab
 
 # Create your views here.
 def home_view(request):
+    if request.user.is_authenticated:
+        return redirect("/user_tabs_detail")
     return render(request, "home.html")
 
 
