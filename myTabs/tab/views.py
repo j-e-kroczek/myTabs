@@ -10,6 +10,7 @@ from .utils import (
     get_procent_balances,
     get_tab_expenses,
     get_tab_expense_types,
+    get_amount_of_transaction,
 )
 from .models import Tab, Belonging, Associating, Expense
 from django.contrib import messages
@@ -388,3 +389,88 @@ def expense_remove_view(request, tab_id, expense_id):
         elif "No" in request.POST:
             return redirect("/tab/" + str(tab_id) + "/")
     return render(request, "remove_expense.html", context=context)
+
+
+@login_required(login_url="/login")
+def reimbursement_view(request, tab_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    debts = get_debts(tab)
+    tab_users = get_tab_users(tab)
+    transactions = simplify_minflow(debts, tab_users)
+    print(transactions)
+    context = {
+        "tab": tab,
+        "user_tabs": get_user_tabs(request.user),
+        "transactions": transactions,
+    }
+    if not check_if_user_is_in_tab(user, tab):
+        return redirect("/404/")
+    return render(request, "reimbursement.html", context=context)
+
+
+@login_required(login_url="/login")
+def reimbursement_expense_view(request, tab_id, debtor_id, creditor_id):
+    user = request.user
+    tab = get_object_or_404(Tab, pk=tab_id)
+    if not check_if_user_is_in_tab(user, tab):
+        return redirect("/404/")
+    debtor = get_user_from_id(debtor_id)
+    creditor = get_user_from_id(creditor_id)
+    amount = get_amount_of_transaction(debtor, creditor, tab)
+    tab_users = get_tab_users(tab, active=True)
+    tab_users_json = get_active_tab_users_json(tab_users)
+    context = {
+        "user_tabs": get_user_tabs(request.user),
+        "tab_users": tab_users,
+        "amount": amount,
+        "tab": tab,
+        "tab_users_json": tab_users_json,
+        "debtor": debtor,
+        "creditor": creditor,
+        "current_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+        "expense_types": get_tab_expense_types(tab),
+    }
+    if request.method == "POST":
+        expense_form = NewExpenseForm(request.POST)
+        checked_users = request.POST.getlist("checked_users")
+        cost = float(request.POST.get("cost"))
+        cost_per_user = round(cost / len(checked_users), 2)
+        cost_per_user_rest = cost - cost_per_user * len(checked_users)
+        sum = 0
+        for user_id in checked_users:
+            user_cost = request.POST.get(user_id)
+            sum += float(user_cost)
+        print(round(cost_per_user_rest, 2))
+        if expense_form.is_valid():
+            if sum != cost and sum != cost - round(cost_per_user_rest, 2):
+                messages.error(
+                    request,
+                    "Unsuccessful creation of expense. The sum of costs is not equal to the cost of the expense.",
+                )
+                return redirect("/tab/" + str(tab_id) + "/")
+            else:
+                expense = expense_form.save(commit=False)
+                expense.tab = tab
+                expense.save()
+                for user_id in checked_users:
+                    user_cost = request.POST.get(user_id)
+                    if User.objects.filter(pk=user_id).exists():
+                        user = User.objects.get(pk=user_id)
+                    else:
+                        messages.error(
+                            request,
+                            "Unsuccessful creation of expense. Invalid information.",
+                        )
+                        expense.delete()
+                        return render(request, "create_expense.html", context=context)
+                    Associating.objects.create(
+                        user=user, expense=expense, cost=user_cost
+                    )
+
+                messages.success(request, "You have created a new expense.")
+                return redirect("/tab/" + str(tab_id) + "/")
+        messages.error(
+            request, "Unsuccessful creation of expense. Invalid information."
+        )
+    return render(request, template_name="reimbursement_expense.html", context=context)

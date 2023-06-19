@@ -64,4 +64,14 @@ urlpatterns = [
         tab_views.tab_edit_view,
         name="tab_edit_view",
     ),
+    path(
+        "tab/<int:tab_id>/reimbursement/",
+        tab_views.reimbursement_view,
+        name="reimbursement_view",
+    ),
+    path(
+        "tab/<int:tab_id>/reimbursement_expense/<int:debtor_id>/<int:creditor_id>/",
+        tab_views.reimbursement_expense_view,
+        name="reimbursement_expense_view",
+    ),
 ]
