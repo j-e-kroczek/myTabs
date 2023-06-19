@@ -9,13 +9,50 @@
       <i class="bi bi-plus-circle"></i>{{" "}}New Tab
     </button>
   </div>
-  {% for tab in user_tabs %}
-  <div>
-    <a href="/tab/{{tab.id}}" class="text-decoration-none">
-      <div class="p-1 border-bottom">
-        <p class="c-primary m-0">{{ tab.name }}</p>
-      </div>
-    </a>
+  <div id="large_menu">
+    {% for tab in user_tabs %}
+    <div>
+      <a href="/tab/{{tab.id}}" class="text-decoration-none">
+        <div class="p-1 border-bottom">
+          <p class="c-primary m-0">{{ tab.name }}</p>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
+  <div id="small_menu" class="dropdown">
+    <a
+      class="btn btn-secondary px-4 py-1 border-0 text-white dropdown-toggle"
+      href="#"
+      role="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      Choose Tab
+    </a>
+
+    <ul class="dropdown-menu">
+      {% for tab in user_tabs %}
+      <li><a class="dropdown-item" href="/tab/{{tab.id}}">{{tab.name}}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
+<script>
+  let small_menu = document.getElementById("small_menu");
+  let large_menu = document.getElementById("large_menu");
+  function checkScreen() {
+    console.log("checkScreen");
+    console.log(screen.width);
+    if (screen.width < 992) {
+      large_menu.style.display = "none";
+      small_menu.style.display = "block";
+    } else {
+      large_menu.style.display = "block";
+      small_menu.style.display = "none";
+    }
+  }
+  window.addEventListener("load", checkScreen);
+
+  window.addEventListener("resize", checkScreen);
+</script>

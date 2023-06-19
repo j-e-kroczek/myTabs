@@ -6,7 +6,7 @@
   <div class="row g-3 row-2 w-100 px-xl-5 ps-3 py-4">
     {% include "user_tabs.html" %}
     <div class="row row-2 col-lg-10 col-12 m-0 p-0">
-      <div class="py-md-3 px-md-3 p-1 col-lg-9 col-12">
+      <div class="py-md-3 px-lg-3 p-1 col-lg-9 col-12">
         <div class="row row-2 align-items-center">
           <h3 class="c-secondary mt-md-0 mt-3 col-lg-6 col-12">{{tab.name}}</h3>
           <div
@@ -24,6 +24,9 @@
         <p class="m-0 c-secondary">
           Created at: {{tab.created_at|date:"d.m.Y"}}
         </p>
+        <div class="col-lg-3 col-12" id="small_balance">
+          {% include "balance_component.html" %}
+        </div>
         <div class="pt-4 row row-2 align-items-center">
           <h3 class="c-secondary col-md-6 col-12">Expenses</h3>
           <div
@@ -39,26 +42,30 @@
         </div>
         <div class="col-lg-12">{% include "expenses_table.html" %}</div>
       </div>
-      <div class="col-lg-3 col-12">
-        <div class="py-3 d-flex align-items-center">
-          <h3
-            class="mt-1 mb-1 c-secondary justify-content-lg-end justify-content-start me-xl-5 me-4"
-          >
-            Balance
-          </h3>
-          <div class="d-flex">
-            <button
-              onclick="location.href='/tab/{{tab.id}}/reimbursement'"
-              class="btn btn-primary px-4 py-1 border-0 text-white"
-            >
-              <i class="bi bi-cash-coin"></i>
-            </button>
-          </div>
-        </div>
-        {% include "balance_bars.html" %}
+      <div class="col-lg-3 col-12" id="large_balance">
+        {% include "balance_component.html" %}
       </div>
     </div>
   </div>
 </div>
-
+<script>
+  small_balance = document.getElementById("small_balance");
+  large_balance = document.getElementById("large_balance");
+  balance_html = large_balance.innerHTML;
+  function showBalance() {
+    if (screen.width < 992) {
+      small_balance.style.display = "block";
+      large_balance.style.display = "none";
+      small_balance.innerHTML = balance_html;
+      large_balance.innerHTML = "";
+    } else {
+      small_balance.style.display = "none";
+      large_balance.style.display = "block";
+      small_balance.innerHTML = "";
+      large_balance.innerHTML = balance_html;
+    }
+  }
+  window.addEventListener("load", showBalance);
+  window.addEventListener("resize", showBalance);
+</script>
 {% endblock %}

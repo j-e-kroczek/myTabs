@@ -142,6 +142,12 @@ def expense_create_view(request, tab_id):
     if request.method == "POST":
         expense_form = NewExpenseForm(request.POST)
         checked_users = request.POST.getlist("checked_users")
+        if len(checked_users) == 0:
+            messages.error(
+                request,
+                "Unsuccessful creation of expense. You have to check at least one user.",
+            )
+            return redirect("/tab/" + str(tab_id) + "/create_expense/")
         cost = float(request.POST.get("cost"))
         cost_per_user = round(cost / len(checked_users), 2)
         cost_per_user_rest = cost - cost_per_user * len(checked_users)
@@ -278,6 +284,14 @@ def expense_edit_view(request, tab_id, expense_id):
     if request.method == "POST":
         expense_form = NewExpenseForm(request.POST)
         checked_users = request.POST.getlist("checked_users")
+        if len(checked_users) == 0:
+            messages.error(
+                request,
+                "Unsuccessful edition of expense. You have to check at least one user.",
+            )
+            return redirect(
+                "/tab/" + str(tab_id) + "/edit_expense/" + str(expense_id) + "/"
+            )
         cost = float(request.POST.get("cost"))
         cost_per_user = round(cost / len(checked_users), 2)
         cost_per_user_rest = cost - cost_per_user * len(checked_users)
@@ -434,6 +448,20 @@ def reimbursement_expense_view(request, tab_id, debtor_id, creditor_id):
     if request.method == "POST":
         expense_form = NewExpenseForm(request.POST)
         checked_users = request.POST.getlist("checked_users")
+        if len(checked_users) == 0:
+            messages.error(
+                request,
+                "Unsuccessful creation of expense. You have to check at least one user.",
+            )
+            return redirect(
+                "/tab/"
+                + str(tab_id)
+                + "/reimbursement_expense/"
+                + str(debtor_id)
+                + "/"
+                + str(creditor_id)
+                + "/"
+            )
         cost = float(request.POST.get("cost"))
         cost_per_user = round(cost / len(checked_users), 2)
         cost_per_user_rest = cost - cost_per_user * len(checked_users)
