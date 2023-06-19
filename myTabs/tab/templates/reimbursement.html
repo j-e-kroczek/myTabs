@@ -19,9 +19,10 @@
           <p class="m-0">{{debtor}} owes {{creditor}} {{amount}} zł</p>
           <button
             onclick="location.href='/tab/{{tab.id}}/reimbursement_expense/{{debtor.id}}/{{creditor.id}}'"
-            class="btn btn-light px-3 px-xs-5 py-1 border-0 mt-md-0 mt-2 text-secondary"
+            class="btn btn-light px-3 px-xs-5 py-1 border-0 mt-md-0 mt-2 text-secondary d-flex align-items-center"
           >
-            <i class="bi bi-check2-square"></i>{{" "}}Mark as paid
+            <i class="bi bi-check2-square d-flex align-self-center pe-2"></i
+            >Mark as paid
           </button>
         </div>
         {% endfor %}

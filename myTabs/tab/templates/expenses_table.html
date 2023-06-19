@@ -9,7 +9,7 @@
     <tbody class="table-group-divider">
       {%for expense, associatings in expenses%}
       <tr>
-        <td>{{expense.name}}</td>
+        <td class="text-break">{{expense.name}}</td>
         <td>{{expense.cost}} zł</td>
         <td>
           <i
@@ -104,7 +104,7 @@
     <tbody class="table-group-divider">
       {%for expense, associatings in expenses%}
       <tr>
-        <td>{{expense.name}}</td>
+        <td class="text-break" style="max-width: 150px">{{expense.name}}</td>
         <td>{{expense.cost}} zł</td>
         <td>{{expense.buyer}}</td>
         <td>{{expense.type.name}}</td>
@@ -146,10 +146,10 @@
                   style="background-color: #f2f2f2"
                 >
                   <div class="col-6">
-                    <p class="p-1 mb-0">{{associating.user}}</p>
+                    <p class="p-1 mb-0 text-break">{{associating.user}}</p>
                   </div>
                   <div class="col-6">
-                    <p class="p-1 mb-0">{{associating.cost}} zł</p>
+                    <p class="p-1 mb-0 text-break">{{associating.cost}} zł</p>
                   </div>
                 </div>
                 {%endfor%}
