@@ -161,3 +161,11 @@ def get_tab_expense_types(tab):
 
 def check_if_user_is_in_tab(user, tab):
     return Belonging.objects.filter(user=user, tab=tab, is_active=True).exists()
+
+
+def get_amount_of_transaction(debtor, creditor, tab):
+    transactions = simplify_minflow(get_debts(tab), get_tab_users(tab))
+    for d, c, a in transactions:
+        if debtor == d and creditor == c:
+            return a
+    return None

@@ -1,0 +1,123 @@
+{%extends "home.html" %} {% block content %} {% load static %}
+
+<div
+  class="container h-100 bg-white d-flex align-items-center shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-md-5 px-1 py-4">
+    {% include "user_tabs.html" %}
+    <div class="p-3 col-lg-10 col-12 m-0">
+      <h3 class="c-secondary">{{tab.name}}</h3>
+      <p class="m-0 c-secondary">Description: {{tab.description}}</p>
+      <p class="m-0 c-secondary">Created at: {{tab.created_at|date:'Y-m-d'}}</p>
+      <h3 class="c-secondary mt-2">Edit expense</h3>
+      <form class="custom-overflow" method="POST">
+        {% csrf_token %}
+        <div class="form-floating my-3">
+          <input
+            name="name"
+            id="id_name"
+            class="w-100 form-control"
+            placeholder="Name"
+            required
+            type="text"
+            value="Reimbursement"
+          />
+          <label for="id_name">Name</label>
+        </div>
+
+        <div class="form-floating my-3">
+          <select
+            class="form-select form-control"
+            aria-label="Select Buyer"
+            name="buyer"
+            id="id_buyer"
+          >
+            {% for user in tab_users %} {% if user == debtor %}
+            <option selected value="{{debtor.id}}">{{debtor.username}}</option>
+            {%else%}
+            <option value="{{user.id}}">{{user.username}}</option>
+            {%endif%} {%endfor%}
+          </select>
+          <label for="id_buyer">Buyer</label>
+        </div>
+        <div class="form-floating my-3">
+          <select
+            class="form-select form-control"
+            aria-label="Select Type"
+            name="type"
+            id="id_type"
+          >
+            {% for type in expense_types %}
+            <option value="{{type.id}}">{{type.name}}</option>
+            {%endfor%}
+          </select>
+          <label for="id_type">Type</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            type="number"
+            step="0.01"
+            name="cost"
+            id="id_cost"
+            class="w-100 form-control"
+            placeholder="Cost"
+            type="text"
+            default="0"
+            required
+            value="{{amount}}"
+          />
+          <label for="id_cost">Cost</label>
+        </div>
+        <div class="form-floating my-3">
+          <input
+            name="date"
+            id="id_date"
+            class="w-100 form-control"
+            placeholder="Date"
+            type="date"
+            value="{{current_date}}"
+            required
+          />
+          <label for="id_date">Date</label>
+        </div>
+        {% include "expense_division.html" %}
+        <button class="btn btn-primary px-5 py-2 border-0" type="submit">
+          Create expense
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+    var creditor_id = {{creditor.id}};
+    console.log(creditor_id);
+  {% for user in tab_users %}
+    var user_id = {{user.id}};
+    if(user_id != creditor_id){
+        var checkbox = document.getElementById("check_" + user_id);
+        checkbox.checked = false;
+        checkbox.style.backgroundColor = "var(--white)";
+        checkbox.style.borderColor = "var(--gray)";
+    }
+    else{
+        var cost_input = document.getElementById("cost_" + user_id);
+        cost_input.value = {{amount}};
+    }
+    {% endfor %}
+
+  function updateCost() {
+    var cost = document.getElementById("id_cost").value;
+    if (cost == "" || cost < 0) {
+      cost = 0;
+    }
+    var cost = parseFloat(cost);
+    var cost = cost.toFixed(2);
+
+    console.log(cost);
+    document.getElementById("id_cost").value = cost;
+  }
+  updateCost();
+  document.getElementById("id_cost").addEventListener("change", updateCost);
+</script>
+{% endblock %}

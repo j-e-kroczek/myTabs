@@ -1,0 +1,34 @@
+{%extends "home.html" %} {% block content %} {% load static %}
+
+<div
+  class="container h-100 bg-white d-flex shadow rounded-2"
+  style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
+>
+  <div class="row g-3 row-2 w-100 px-xl-5 ps-3 py-4">
+    {% include "user_tabs.html" %}
+    <div class="py-3 px-2 col-lg-10 col-12 m-0">
+      <h3 class="c-secondary">{{tab.name}}</h3>
+      <p class="m-0 c-secondary">Description: {{tab.description}}</p>
+      <p class="m-0 c-secondary">Created at: {{tab.created_at}}</p>
+      <h3 class="c-secondary mt-2">Reimbursement</h3>
+      <div class="py-2">
+        {% for debtor, creditor, amount in transactions %}
+        <div
+          class="bg-primary rounded my-2 p-3 text-white d-flex flex-md-row flex-column justify-content-md-between align-items-md-center"
+        >
+          <p class="m-0">{{debtor}} owes {{creditor}} {{amount}} zł</p>
+          <button class="btn btn-light px-3 px-xs-5 py-1 border-0 mt-md-0 mt-2">
+            <a
+              href="/tab/{{tab.id}}/reimbursement_expense/{{debtor.id}}/{{creditor.id}}"
+              class="text-decoration-none text-secondary"
+            >
+              <i class="bi bi-check2-square"></i>{{" "}}Mark as paid
+            </a>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
