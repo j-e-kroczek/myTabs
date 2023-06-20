@@ -42,7 +42,6 @@ window.onload = function () {
   for (let i = 0; i < tabUsers.length; i++) {
     user_costs.push(document.getElementById("cost_" + tabUsers[i].id));
   }
-
   for (let i = 0; i < tabUsers.length; i++) {
     document
       .getElementById("check_" + tabUsers[i].id)
@@ -77,6 +76,7 @@ window.onload = function () {
           }
           var cost = parseFloat(cost);
           var cost = cost.toFixed(2);
+
           event.target.value = cost;
           clearTimeout(timeout);
           timeout = setTimeout(divideCostAdvaced, 100);
@@ -91,7 +91,6 @@ window.onload = function () {
       let nb_users = checked_users_costs.length;
       let cost_per_user = (total / nb_users).toFixed(2);
       let cost_per_user_rest = total - cost_per_user * nb_users;
-
       for (let i = 0; i < nb_users; i++) {
         checked_users_costs[i].value = cost_per_user;
       }

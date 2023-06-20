@@ -91,7 +91,6 @@
 </div>
 <script>
     var creditor_id = {{creditor.id}};
-    console.log(creditor_id);
   {% for user in tab_users %}
     var user_id = {{user.id}};
     if(user_id != creditor_id){
@@ -114,7 +113,6 @@
     var cost = parseFloat(cost);
     var cost = cost.toFixed(2);
 
-    console.log(cost);
     document.getElementById("id_cost").value = cost;
   }
   updateCost();

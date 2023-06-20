@@ -19,8 +19,14 @@ from django.urls import path
 from tab import views as tab_views
 from user import views as user_views
 from django.conf.urls import handler404
+from django.urls import re_path as url
+
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
+    url(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+    url(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
     path("admin/", admin.site.urls),
     path("", tab_views.home_view, name="home_view"),
     path("register/", user_views.register_view, name="register_view"),

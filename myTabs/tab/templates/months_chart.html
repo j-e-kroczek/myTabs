@@ -1,0 +1,60 @@
+<div id="container" class="chart-size">
+  <canvas id="bar-chart"></canvas>
+</div>
+
+<script>
+  var barChartData = {
+    type: 'bar', // Changed chart type to 'bar'
+    data: {
+      datasets: [{
+        data: {{ months_data | safe }},
+        backgroundColor: [
+          '#1668A1', '#289999', '#5DCD7F', '#8F8F8F', '#E3ECED',
+          '#76CBCB', '#800000', '#e6194B', '#f58231', '#ffe119',
+          '#808000', '#bfef45', '#3cb44b', '#911eb4', '#dcbeff',
+          '#f032e6', '#fabed4', '#ffd8b1', '#fffac8', '#aaffc3',
+        ],
+        label: 'Expenses' // Updated label to 'Expenses'
+      }],
+      labels: {{ months_labels |safe }}
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Months' // X-axis label
+          }
+        }],
+        yAxes: [{
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Expenses (zł)' // Y-axis label
+          },
+          ticks: {
+            beginAtZero: true,
+            callback: function (value) {
+              return value.toFixed(2) + ' zł'; // Format Y-axis tick labels
+            }
+          }
+        }]
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var dataset = data.datasets[tooltipItem.datasetIndex];
+            var value = dataset.data[tooltipItem.index];
+            return value.toFixed(2) + " zł";
+          }
+        }
+      }
+    }
+  };
+</script>

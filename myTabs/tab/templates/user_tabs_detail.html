@@ -5,7 +5,124 @@
 >
   <div class="row g-3 row-2 w-100 px-xl-5 ps-3 py-4">
     {% include "user_tabs.html" %}
+    <div class="row row-2 py-md-3 px-lg-3 p-1 col-lg-10 col-12 m-0">
+      <div class="py-md-3 px-lg-3 p-1 m-0 col-lg-4 col-12">
+        <h3 class="c-secondary mb-4">Statistics</h3>
+        <div
+          class="btn-group-vertical w-100 primary-btn-group"
+          role="group"
+          aria-label="Vertical radio toggle button group"
+        >
+          <input
+            type="radio"
+            class="btn-check"
+            name="vbtn-radio"
+            id="categories-chart-btn"
+            autocomplete="off"
+            checked
+          />
+          <label class="btn btn-outline-primary" for="categories-chart-btn"
+            >Chart by categories</label
+          >
+          <input
+            type="radio"
+            class="btn-check"
+            name="vbtn-radio"
+            id="months-chart-btn"
+            autocomplete="off"
+          />
+          <label class="btn btn-outline-primary" for="months-chart-btn"
+            >Chart by months</label
+          >
+        </div>
+      </div>
+      <div
+        id="categories-chart"
+        class="col-lg-8 col-12 py-md-3 px-lg-3 p-1"
+        style="display: block"
+      >
+        <h4 class="c-primary text-center pt-lg-0 pt-3 pb-2">
+          Expenses Chart by Categories
+        </h4>
+        {% include "categories_chart.html" %}
+      </div>
+      <div
+        id="months-chart"
+        class="col-lg-8 col-12 py-md-3 px-lg-3 p-1"
+        style="display: none"
+      >
+        <div
+          class="d-flex justify-content-center align-items-center pb-2 pt-lg-0 pt-3"
+        >
+          <h4 class="c-primary text-center">Expenses Chart by Months in</h4>
+          <select
+            class="form-select ms-2"
+            style="width: 100px"
+            aria-label="Default select example"
+            id="year"
+            bar-data="{{expenses_by_month_and_year_json}}"
+          >
+            {% for year in years %} {% if year == the_latest_year %}
+            <option selected id="{{year}}" value="{{ year }}">
+              {{ year }}
+            </option>
+            {% else %}
+            <option id="{{year}}" value="{{ year }}">{{ year }}</option>
+            {% endif %} {% endfor %}
+          </select>
+        </div>
+        {% include "months_chart.html" %}
+      </div>
+    </div>
   </div>
 </div>
+<script>
+  var categories_btn = document.getElementById("categories-chart-btn");
+  var months_btn = document.getElementById("months-chart-btn");
 
+  var categories_chart = document.getElementById("categories-chart");
+  var months_chart = document.getElementById("months-chart");
+
+  categories_btn.onclick = show_categories_chart;
+  months_btn.onclick = show_months_chart;
+
+  function show_categories_chart() {
+    categories_chart.style.display = "block";
+    months_chart.style.display = "none";
+  }
+
+  function show_months_chart() {
+    categories_chart.style.display = "none";
+    months_chart.style.display = "block";
+  }
+
+  year_input = document.getElementById("year");
+  year_input.onchange = change_year;
+
+  function change_year() {
+    var year = year_input.value;
+    updateChartData(year);
+  }
+
+  // Inicjalizacja danych dla wykresu (domyślne dane)
+  var defaultData = [100, 200, 300, 400, 500]; // Przykładowe dane
+
+  // Funkcja do aktualizacji danych w wykresie na podstawie wybranego roku
+  function updateChartData(year) {
+    var year = year_input.value;
+    var bar_ctx = document.getElementById("bar-chart").getContext("2d");
+    const bar_data = JSON.parse(year_input.getAttribute("bar-data"));
+    values = Object.values(bar_data[year]);
+    myBar.data.datasets[0].data = values;
+    window.myBar.update();
+  }
+
+  window.onload = function () {
+    var ctx = document.getElementById("pie-chart").getContext("2d");
+    window.myPie = new Chart(ctx, config);
+    var bar_ctx = document.getElementById("bar-chart").getContext("2d");
+    window.myBar = new Chart(bar_ctx, barChartData); // Initialize bar chart
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 {% endblock %}

@@ -63,7 +63,6 @@
       {% for user in tab_users %}
         document.getElementById("check_{{user.id}}").addEventListener("click", () => {
           var checkbox = document.getElementById("check_{{user.id}}");
-          console.log(checkbox);
           if (checkbox.checked == false) {
             checkbox.style.backgroundColor = "var(--white)";
             checkbox.style.borderColor = "var(--gray)";

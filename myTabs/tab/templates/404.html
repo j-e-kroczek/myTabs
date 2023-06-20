@@ -1,15 +1,24 @@
 <!--Login-->
 {%extends "home.html" %} {% block content %}
-
 <div
   class="container h-100 d-flex justify-content-center align-items-center"
   style="margin-top: calc(60px + 3vh); margin-bottom: calc(40px); flex: 1"
 >
   <div class="row row-2 bg-white align-items-center shadow rounded-2 px-5 py-4">
     <div class="p-lg-1 p-5 col-lg-6 col-12 text-center d-lg-inline d-none">
-      <img src="/static/images/login.png" alt="Login" class="img-fluid" />
+      <img src="/static/images/error.png" alt="error_img" class="img-fluid" />
     </div>
-    <div class="p-1 col-lg-5 col-12 ms-auto">
-      <h1 class="c-primary">404 Page not found</h1
-    </div>>
-{% endblock %}
+    <div class="p-1 col-lg-5 col-12 text-center">
+      <h1 class="c-primary" style="font-size: 120px">404</h1>
+      <h1 class="c-primary">Page not found</h1>
+      <button
+        onclick="location.href='/'"
+        class="btn btn-primary px-5 py-2 border-0 text-white d-flex align-items-center mt-4 mx-auto"
+      >
+        <i class="bi bi-house-door d-flex align-self-center pe-2"></i>
+        Home
+      </button>
+    </div>
+    {% endblock %}
+  </div>
+</div>

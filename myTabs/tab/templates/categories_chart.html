@@ -1,0 +1,40 @@
+<div id="container" class="chart-size">
+  <canvas id="pie-chart"></canvas>
+</div>
+
+<script>
+  var config = {
+    type: 'pie',
+    data: {
+      datasets: [{
+        data: {{ categories_data | safe }},
+        backgroundColor: [
+          '#1668A1', '#289999', '#5DCD7F', '#8F8F8F', '#E3ECED',
+          '#76CBCB', '#800000', '#e6194B', '#f58231', '#ffe119',
+          '#808000', '#bfef45', '#3cb44b', '#911eb4', '#dcbeff',
+          '#f032e6', '#fabed4', '#ffd8b1', '#fffac8', '#aaffc3',
+        ],
+        label: 'Categories'
+      }],
+      labels: {{ categories_labels |safe }}
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        display: true,
+        position: 'bottom'
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var dataset = data.datasets[tooltipItem.datasetIndex];
+            var value = dataset.data[tooltipItem.index];
+            var label = data.labels[tooltipItem.index];
+            return label + ": " + value.toFixed(2) + "zł";
+          }
+        }
+      }
+    }
+  };
+</script>
