@@ -3,6 +3,7 @@ from tab.models import Tab, Associating, Belonging
 from django.db.models import Q
 import json
 import itertools
+import datetime
 
 
 def get_active_tab_users_json(tab_users):
@@ -168,3 +169,53 @@ def get_amount_of_transaction(debtor, creditor, tab):
         if debtor == d and creditor == c:
             return a
     return None
+
+
+def get_user_associatings(user):
+    return Associating.objects.filter(user=user)
+
+
+def get_sum_of_user_expenses_by_type(user):
+    associatings = get_user_associatings(user)
+    cost_and_type = {}
+    for associating in associatings:
+        type = Expense.objects.get(id=associating.expense.id).type.name
+        cost_and_type[type] = float(cost_and_type.get(type, 0)) + float(
+            associating.cost
+        )
+    return cost_and_type
+
+
+def get_sum_of_user_expenses_by_month(user, year):
+    associatings = get_user_associatings(user)
+    cost_and_month = {}
+    for i in range(1, 13):
+        month = datetime.date(1900, i, 1).strftime("%B")
+        cost_and_month[month] = 0
+
+    print(year)
+    for associating in associatings:
+        date = Expense.objects.get(id=associating.expense.id).date
+        if str(date.year) == str(year):
+            num_month = date.month
+            month = datetime.date(1900, num_month, 1).strftime("%B")
+            cost_and_month[month] += float(associating.cost)
+    return cost_and_month
+
+
+def get_sum_of_user_expenses_by_month_and_year(user):
+    associatings = get_user_associatings(user)
+    cost_and_month = {}
+    year_and_months = {}
+    for i in range(1, 13):
+        cost_and_month[i] = 0
+
+    for associating in associatings:
+        date = Expense.objects.get(id=associating.expense.id).date
+        year = date.year
+        if year not in year_and_months.keys():
+            year_and_months[year] = cost_and_month.copy()
+
+        month = date.month
+        year_and_months[year][month] += float(associating.cost)
+    return year_and_months

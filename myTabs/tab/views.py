@@ -11,6 +11,10 @@ from .utils import (
     get_tab_expenses,
     get_tab_expense_types,
     get_amount_of_transaction,
+    get_user_associatings,
+    get_sum_of_user_expenses_by_type,
+    get_sum_of_user_expenses_by_month,
+    get_sum_of_user_expenses_by_month_and_year,
 )
 from .models import Tab, Belonging, Associating, Expense
 from django.contrib import messages
@@ -37,7 +41,36 @@ def balance_bars_view(request):
 
 @login_required(login_url="/login")
 def user_tabs_detail_view(request):
-    context = {"user_tabs": get_user_tabs(request.user)}
+    expenses_by_type = get_sum_of_user_expenses_by_type(request.user)
+    expenses_by_type = dict(
+        sorted(expenses_by_type.items(), key=lambda x: x[1], reverse=True)
+    )
+
+    expenses_by_month_and_year = get_sum_of_user_expenses_by_month_and_year(
+        request.user
+    )
+    the_latest_year = max(expenses_by_month_and_year.keys())
+    expenses_by_month = get_sum_of_user_expenses_by_month(request.user, the_latest_year)
+    print(expenses_by_month_and_year)
+    expenses_by_month_and_year_json = json.dumps(expenses_by_month_and_year)
+
+    categories_labels = list(expenses_by_type.keys())
+    categories_data = list(expenses_by_type.values())
+
+    months_labels = list(expenses_by_month.keys())
+    months_data = list(expenses_by_month.values())
+
+    context = {
+        "user_tabs": get_user_tabs(request.user),
+        "categories_labels": categories_labels,
+        "categories_data": categories_data,
+        "months_labels": months_labels,
+        "months_data": months_data,
+        "expenses_by_month_and_year": expenses_by_month_and_year.items(),
+        "expenses_by_month_and_year_json": expenses_by_month_and_year_json,
+        "years": reversed(list(expenses_by_month_and_year.keys())),
+        "the_latest_year": the_latest_year,
+    }
     return render(request, template_name="user_tabs_detail.html", context=context)
 
 

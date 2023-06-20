@@ -6,6 +6,7 @@
   --white: white;
   --gray: gray;
   --danger: #dc3545;
+  --light-gray: #f2f2f2;
 }
 
 .bg-home {
@@ -148,8 +149,7 @@ body {
 
 @media (max-width: 991px) {
   .chart-size {
-    min-height: 100vw !important;
-    width: 100px !important;
+    height: 60vh !important;
   }
 }
 
