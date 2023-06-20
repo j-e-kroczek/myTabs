@@ -1,48 +1,55 @@
+import os 
+from tqdm import trange, tqdm
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myTabs.settings")
+
+import django 
+django.setup() 
+
+from faker import Faker
+import faker_commerce
 import random
-from django.contrib.auth.models import User
-from django.utils import timezone
-from datetime import timedelta
-from tab.models import Tab, Belonging, ExpenseType, Expense, Associating
-
-
-# Tworzenie 4 użytkowników
-users = []
-for user in User.objects.all():
-    users.append(user)
-
-# Tworzenie tablic
-tabs = []
-for i in range(4):
-    tab = Tab.objects.create(name=f'Tab{i+1}')
-    tabs.append(tab)
-
-# Dołączanie użytkowników do tablic
-for user, tab in zip(users, tabs):
-    Belonging.objects.create(user=user, tab=tab)
-
-# Tworzenie typów wydatków
-expense_types = []
-for i in range(10):
-    expense_type = ExpenseType.objects.create(name=f'Expense Type {i+1}', tab=tabs[i % 4])
-    expense_types.append(expense_type)
-
-# Tworzenie i przypisywanie wydatków
-for i in range(10):
-    tab = tabs[i % 4]
-    buyer = users[i % 4]
-    expense_type = expense_types[i]
-    expense = Expense.objects.create(tab=tab, buyer=buyer, type=expense_type, name=f'Expense {i+1}', cost=random.randint(50, 200))
+from datetime import date
+from tab.models import Tab, Expense, User, Associating, Belonging, ExpenseType
+from model_bakery import baker
     
-    # Tworzenie powiązań użytkowników z wydatkiem
-    for user in users:
-        if user == buyer:
-            cost = expense.cost
-        else:
-            cost = expense.cost // 4
-        Associating.objects.create(user=user, expense=expense, cost=cost)
-    
-    # Aktualizacja daty na 10 kolejnych dni wstecz
-    expense.date = timezone.now() - timedelta(days=10-i)
-    expense.save()
+def generate_expences(tab_id:int, how_many:int=10):
+    fake = Faker(['pl_PL'])
+    fake.add_provider(faker_commerce.Provider)
+    tab = Tab.objects.get(id=tab_id)
+    expense_types = ExpenseType.objects.filter(is_private=False)
+    users = []
+    for user in Belonging.objects.filter(tab=tab, is_active=True):
+        users.append(user.user)
+    for _ in trange(0, how_many, desc="Generating expences"):
+        user = random.choice(users)
+        name = fake.ecommerce_name()
+        amount = random.randint(1, 1000)
+        date = fake.date_between(start_date='-3y', end_date='today')
+        expense = baker.make(Expense, tab=tab, buyer=user, name=name, cost=amount, date=date, type=random.choice(expense_types))
+        current_amount = amount
+        for user in random.sample(list(users), random.randint(1, len(users))):
+            if current_amount>0 and not Associating.objects.filter(expense=expense, user=user).exists():
+                cost = random.randint(1, current_amount)
+                baker.make(Associating, expense=expense, user=user, cost=cost)
+                current_amount -= cost
+    print("Done.")
 
-print("Tablice i wydatki zostały utworzone.")
+def start_script():
+    try:
+        input("This script will create fake data. Press ENTER to continue...")
+        x = input("Are you sure you want to continue? (y/n): ")
+        if x == 'y':
+            tab_id = int(input("Enter tab id: "))
+            how_many = int(input("How many expences do you want to add? "))
+        if not Tab.objects.filter(id=tab_id).exists():
+            print("Tab with given id does not exist.")
+            return
+        if how_many < 1:
+            print("Number of expences must be positive.")
+            return
+        generate_expences(tab_id, how_many)
+    except KeyboardInterrupt:
+        print("\nAborted.")
+        
+if __name__ == "__main__":
+    start_script()
