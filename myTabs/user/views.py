@@ -7,7 +7,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.decorators import login_required
 from user.models import Profile
-from django.contrib.auth.models import User
 
 
 def register_view(request):
@@ -72,7 +71,6 @@ def logout_view(request):
 def profile_view(request):
     user = request.user
     if request.method == "POST":
-        print(request.POST)
         profile_form = EditProfileForm(request.POST, instance=user)
         password_form = SetPasswordForm(user, request.POST)
         if password_form.is_valid():
@@ -80,7 +78,6 @@ def profile_view(request):
             messages.success(request, "Your password has been changed")
             return redirect("/login")
         elif profile_form.is_valid():
-            print(profile_form.cleaned_data)
             request.user.username = profile_form.cleaned_data["username"]
             request.user.email = profile_form.cleaned_data["email"]
             request.user.save()
@@ -90,21 +87,11 @@ def profile_view(request):
             messages.success(request, "Your profile data has been changed")
             return redirect("/profile")
         else:
-            for error in list(form.errors.values()):
+            for error in list(profile_form.errors.values()):
+                messages.error(request, error)
+
+            for error in list(password_form.errors.values()):
                 messages.error(request, error)
     form = SetPasswordForm(user)
     return render(request, template_name="profile.html", context={"form": form})
 
-
-def get_user_from_name(name):
-    if User.objects.filter(username=name).exists():
-        return User.objects.get(username=name)
-    else:
-        return None
-
-
-def get_user_from_id(user_id):
-    if User.objects.filter(pk=user_id).exists():
-        return User.objects.get(pk=user_id)
-    else:
-        return None

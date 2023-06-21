@@ -19,24 +19,21 @@ from .utils import (
 from .models import Tab, Belonging, Associating, Expense
 from django.contrib import messages
 from .forms import NewTabForm, NewBelongingForm, NewExpenseForm
-from user.views import get_user_from_name, get_user_from_id
 import datetime
 from django.contrib.auth.models import User
 import json
-from .utils import get_active_tab_users_json, check_if_user_is_in_tab
+from .utils import (
+    convert_list_of_users_to_json,
+    check_if_user_is_in_tab,
+    get_user_from_name,
+    get_user_from_id,
+)
 
 
-# Create your views here.
 def home_view(request):
     if request.user.is_authenticated:
         return redirect("/user_tabs_detail")
     return render(request, "home.html")
-
-
-@login_required(login_url="/login")
-def balance_bars_view(request):
-    context = {"": get_user_tabs(request.user)}
-    return render(request, template_name="user_tabs.html", context=context)
 
 
 @login_required(login_url="/login")
@@ -49,9 +46,12 @@ def user_tabs_detail_view(request):
     expenses_by_month_and_year = get_sum_of_user_expenses_by_month_and_year(
         request.user
     )
-    the_latest_year = max(expenses_by_month_and_year.keys())
+    if len(expenses_by_month_and_year) == 0:
+        the_latest_year = datetime.datetime.now().year
+    else:
+        the_latest_year = max(expenses_by_month_and_year.keys())
+
     expenses_by_month = get_sum_of_user_expenses_by_month(request.user, the_latest_year)
-    print(expenses_by_month_and_year)
     expenses_by_month_and_year_json = json.dumps(expenses_by_month_and_year)
 
     categories_labels = list(expenses_by_type.keys())
@@ -104,7 +104,6 @@ def tab_detail_view(request, tab_id):
 @login_required(login_url="/login")
 def tab_create_view(request):
     user = request.user
-    print(request)
     if request.method == "POST":
         tab_form = NewTabForm(request.POST)
         if tab_form.is_valid():
@@ -164,7 +163,7 @@ def expense_create_view(request, tab_id):
     if not check_if_user_is_in_tab(user, tab):
         return redirect("/404/")
     tab_users = get_tab_users(tab, active=True)
-    tab_users_json = get_active_tab_users_json(tab_users)
+    tab_users_json = convert_list_of_users_to_json(tab_users)
     context = {
         "tab": tab,
         "user_tabs": get_user_tabs(request.user),
@@ -183,6 +182,14 @@ def expense_create_view(request, tab_id):
                 "Unsuccessful creation of expense. You have to check at least one user.",
             )
             return redirect("/tab/" + str(tab_id) + "/create_expense/")
+        for user_id in checked_users:
+            user = get_user_from_id(user_id)
+            if not user or user not in tab_users:
+                messages.error(
+                    request,
+                    "Unsuccessful creation of expense. You have to check only users from this tab.",
+                )
+                return redirect("/tab/" + str(tab_id) + "/create_expense/")
         cost = float(request.POST.get("cost"))
         cost_per_user = round(cost / len(checked_users), 2)
         cost_per_user_rest = cost - cost_per_user * len(checked_users)
@@ -190,7 +197,6 @@ def expense_create_view(request, tab_id):
         for user_id in checked_users:
             user_cost = request.POST.get(user_id)
             sum += float(user_cost)
-        print(round(cost_per_user_rest, 2))
         if expense_form.is_valid():
             if sum != cost and sum != cost - round(cost_per_user_rest, 2):
                 messages.error(
@@ -204,15 +210,7 @@ def expense_create_view(request, tab_id):
                 expense.save()
                 for user_id in checked_users:
                     user_cost = request.POST.get(user_id)
-                    if User.objects.filter(pk=user_id).exists():
-                        user = User.objects.get(pk=user_id)
-                    else:
-                        messages.error(
-                            request,
-                            "Unsuccessful creation of expense. Invalid information.",
-                        )
-                        expense.delete()
-                        return render(request, "create_expense.html", context=context)
+                    user = User.objects.get(pk=user_id)
                     Associating.objects.create(
                         user=user, expense=expense, cost=user_cost
                     )
@@ -238,7 +236,7 @@ def add_user_view(request, tab_id):
         "current_user": user,
     }
     if request.method == "POST":
-        added_user_name = request.POST.get("id_user")
+        added_user_name = request.POST.get("username")
         added_user = get_user_from_name(added_user_name)
         if added_user is None:
             messages.error(request, "This user does not exist.")
@@ -301,7 +299,7 @@ def expense_edit_view(request, tab_id, expense_id):
     expense = get_object_or_404(Expense, pk=expense_id)
     associatings = Associating.objects.filter(expense=expense)
     tab_users = get_tab_users(tab, active=True)
-    tab_users_json = get_active_tab_users_json(tab_users)
+    tab_users_json = convert_list_of_users_to_json(tab_users)
     users_in_division = [obj.user for obj in associatings]
     users_not_in_division = [x for x in tab_users if x not in users_in_division]
     context = {
@@ -333,7 +331,16 @@ def expense_edit_view(request, tab_id, expense_id):
         sum = 0
         for user_id in checked_users:
             user_cost = request.POST.get(user_id)
-            sum += float(user_cost)
+            try:
+                sum += float(user_cost)
+            except:
+                messages.error(
+                    request,
+                    "Unsuccessful edition of expense. Invalid information.",
+                )
+                return redirect(
+                    "/tab/" + str(tab_id) + "/edit_expense/" + str(expense_id) + "/"
+                )
 
         if expense_form.is_valid():
             if sum != cost and sum != cost - round(cost_per_user_rest, 2):
@@ -399,14 +406,12 @@ def expense_edit_view(request, tab_id, expense_id):
                         Associating.objects.create(
                             user=user, expense=expense, cost=user_cost
                         )
-                print(checked_users)
                 for user in users_in_division:
                     if str(user.id) not in checked_users:
                         Associating.objects.filter(expense=expense, user=user).delete()
             messages.success(request, "You have edited the expense.")
             return redirect("/tab/" + str(tab_id) + "/")
         messages.error(request, "Unsuccessful edition of expense. Invalid information.")
-        print(expense_form.errors)
     return render(request, "edit_expense.html", context=context)
 
 
@@ -444,17 +449,16 @@ def expense_remove_view(request, tab_id, expense_id):
 def reimbursement_view(request, tab_id):
     user = request.user
     tab = get_object_or_404(Tab, pk=tab_id)
+    if not check_if_user_is_in_tab(user, tab):
+        return redirect("/404/")
     debts = get_debts(tab)
     tab_users = get_tab_users(tab)
     transactions = simplify_minflow(debts, tab_users)
-    print(transactions)
     context = {
         "tab": tab,
         "user_tabs": get_user_tabs(request.user),
         "transactions": transactions,
     }
-    if not check_if_user_is_in_tab(user, tab):
-        return redirect("/404/")
     return render(request, "reimbursement.html", context=context)
 
 
@@ -464,11 +468,17 @@ def reimbursement_expense_view(request, tab_id, debtor_id, creditor_id):
     tab = get_object_or_404(Tab, pk=tab_id)
     if not check_if_user_is_in_tab(user, tab):
         return redirect("/404/")
+    if not check_if_user_is_in_tab(get_user_from_id(debtor_id), tab):
+        messages.error(request, "Unsuccessful reimbursement. Invalid information.")
+        redirect("/tab/" + str(tab_id) + "/")
+    if not check_if_user_is_in_tab(get_user_from_id(creditor_id), tab):
+        messages.error(request, "Unsuccessful reimbursement. Invalid information.")
+        redirect("/tab/" + str(tab_id) + "/")
     debtor = get_user_from_id(debtor_id)
     creditor = get_user_from_id(creditor_id)
     amount = get_amount_of_transaction(debtor, creditor, tab)
     tab_users = get_tab_users(tab, active=True)
-    tab_users_json = get_active_tab_users_json(tab_users)
+    tab_users_json = convert_list_of_users_to_json(tab_users)
     context = {
         "user_tabs": get_user_tabs(request.user),
         "tab_users": tab_users,
@@ -503,8 +513,22 @@ def reimbursement_expense_view(request, tab_id, debtor_id, creditor_id):
         sum = 0
         for user_id in checked_users:
             user_cost = request.POST.get(user_id)
-            sum += float(user_cost)
-        print(round(cost_per_user_rest, 2))
+            try:
+                sum += float(user_cost)
+            except:
+                messages.error(
+                    request,
+                    "Unsuccessful creation of expense. Invalid information.",
+                )
+                return redirect(
+                    "/tab/"
+                    + str(tab_id)
+                    + "/reimbursement_expense/"
+                    + str(debtor_id)
+                    + "/"
+                    + str(creditor_id)
+                    + "/"
+                )
         if expense_form.is_valid():
             if sum != cost and sum != cost - round(cost_per_user_rest, 2):
                 messages.error(
@@ -514,11 +538,17 @@ def reimbursement_expense_view(request, tab_id, debtor_id, creditor_id):
                 return redirect("/tab/" + str(tab_id) + "/")
             else:
                 expense = expense_form.save(commit=False)
+                if not check_if_user_is_in_tab(expense.buyer, tab):
+                    messages.error(
+                        request,
+                        "Unsuccessful creation of expense. Invalid information.",
+                    )
+                    return redirect("/tab/" + str(tab_id) + "/")
                 expense.tab = tab
                 expense.save()
                 for user_id in checked_users:
                     user_cost = request.POST.get(user_id)
-                    if User.objects.filter(pk=user_id).exists():
+                    if User.objects.filter(pk=user_id).exists() and check_if_user_is_in_tab(get_user_from_id(user_id), tab):
                         user = User.objects.get(pk=user_id)
                     else:
                         messages.error(

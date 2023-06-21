@@ -3,8 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from tab.models import Tab, Belonging, Expense
 
-# Create your forms here.
-
 
 class NewExpenseForm(forms.ModelForm):
     class Meta:
