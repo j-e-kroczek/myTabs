@@ -14,7 +14,7 @@ First clone the repository from Github and switch to the new directory:
     
 Create .env file:
 
-    HOSTS={your allowed hosts}
+    AllOWED_HOSTS={your allowed hosts}
     DJANGO_SECRET={your django secret}
 
 Activate the virtualenv for your project.
