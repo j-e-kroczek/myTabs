@@ -16,7 +16,10 @@
         <div
           class="bg-primary rounded my-2 p-3 text-white d-flex flex-md-row flex-column justify-content-md-between align-items-md-center"
         >
-          <p class="m-0">{{debtor}} owes {{creditor}} {{amount}} zł</p>
+          <p class="m-0">
+            {{debtor}} owes {{creditor}} ({{creditor.profile.phone_number}})
+            {{amount}} zł
+          </p>
           <button
             onclick="location.href='/tab/{{tab.id}}/reimbursement_expense/{{debtor.id}}/{{creditor.id}}'"
             class="btn btn-light px-3 px-xs-5 py-1 border-0 mt-md-0 mt-2 text-secondary d-flex align-items-center"
