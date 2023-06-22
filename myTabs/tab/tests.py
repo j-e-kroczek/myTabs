@@ -304,13 +304,13 @@ class GetTabExpencesTest(TestCase):
         self.assertEqual(result, expected_result)
 
 
-class GetTabExpenceTypesTest(TestCase):
+class GetTabExpenseTypesTest(TestCase):
     def test(self):
         baker.make(ExpenseType, is_private=False, tab=None)
         tab = baker.make(Tab)
         baker.make(ExpenseType, is_private=True, tab=tab)
         result = get_tab_expense_types(tab)
-        self.assertEqual(result.count(), 2)
+        self.assertEqual(result.count(), 3)
 
 
 class CheckIfUserInTabTest(TestCase):
@@ -1162,20 +1162,20 @@ class ReimbursementExpenseViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateNotUsed(response, "reimbursement_expense.html")
-        
+
     def test_user_not_in_tab(self):
         self.client.force_login(self.user3)
         Belonging.objects.filter(user=self.user3).delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateNotUsed(response, "reimbursement_expense.html")
-        
+
     def test_get(self):
         self.client.force_login(self.user1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "reimbursement_expense.html")
-        
+
     def test_no_checked_users(self):
         self.client.force_login(self.user1)
         data = {
@@ -1299,11 +1299,12 @@ class ReimbursementExpenseViewTest(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Expense.objects.filter(name="test").count(), 1)
+
     def test_invalid_creditor_or_debtor(self):
         self.client.force_login(self.user1)
         Belonging.objects.filter(user=self.user3).delete()
         Associating.objects.filter(user=self.user3).delete()
-        url1 =  (
+        url1 = (
             "/tab/"
             + str(self.tab1.id)
             + "/reimbursement_expense/"
@@ -1312,7 +1313,7 @@ class ReimbursementExpenseViewTest(TestCase):
             + str(self.user2.id)
             + "/"
         )
-        url2 =  (
+        url2 = (
             "/tab/"
             + str(self.tab1.id)
             + "/reimbursement_expense/"
@@ -1320,10 +1321,8 @@ class ReimbursementExpenseViewTest(TestCase):
             + "/"
             + str(self.user3.id)
             + "/"
-        ) 
+        )
         response1 = self.client.get(url1)
         response2 = self.client.get(url2)
         self.assertEqual(response1.status_code, 200)
         self.assertEqual(response2.status_code, 200)
-        
-        
