@@ -33,7 +33,7 @@ from .utils import (
 def home_view(request):
     if request.user.is_authenticated:
         return redirect("/user_tabs_detail")
-    return render(request, "home.html")
+    return render(request, "landing_page.html")
 
 
 @login_required(login_url="/login")
