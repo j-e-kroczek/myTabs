@@ -143,6 +143,8 @@ def get_tab_expenses(tab: Tab):
 
 
 def get_tab_expense_types(tab: Tab):
+    if not ExpenseType.objects.filter(name='Reimbursement', is_private=False).exists():
+        ExpenseType.objects.create(name='Reimbursement', is_private=False)
     return ExpenseType.objects.filter(Q(tab=tab) | Q(is_private=False))
 
 

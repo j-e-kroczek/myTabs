@@ -16,7 +16,7 @@ from .utils import (
     get_sum_of_user_expenses_by_month,
     get_sum_of_user_expenses_by_month_and_year,
 )
-from .models import Tab, Belonging, Associating, Expense
+from .models import Tab, Belonging, Associating, Expense, ExpenseType
 from django.contrib import messages
 from .forms import NewTabForm, NewBelongingForm, NewExpenseForm
 import datetime
