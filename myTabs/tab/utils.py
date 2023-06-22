@@ -136,7 +136,7 @@ def run_opt(debts:List[Tuple[User, User, float]], people:List[User]):
 
 def get_tab_expenses(tab: Tab):
     result = {}
-    expenses = Expense.objects.filter(tab=tab)
+    expenses = Expense.objects.filter(tab=tab).order_by("-date")
     for expense in expenses:
         result[expense] = Associating.objects.filter(expense=expense)
     return result

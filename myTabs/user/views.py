@@ -16,6 +16,7 @@ def register_view(request):
     if request.method == "POST":
         user_form = NewUserForm(request.POST)
         profile_form = NewProfileForm(request.POST)
+        print(request.POST.get("phone_number"))
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
             profile = profile_form.save(commit=False)
@@ -94,4 +95,3 @@ def profile_view(request):
                 messages.error(request, error)
     form = SetPasswordForm(user)
     return render(request, template_name="profile.html", context={"form": form})
-
