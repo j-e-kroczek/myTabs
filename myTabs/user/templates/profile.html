@@ -45,6 +45,7 @@
                 required
                 type="text"
                 value="{{user.username}}"
+                data-cur-number = "{{user.profile.phone_number}}"
               />
             </div>
           </div>
@@ -119,14 +120,14 @@
       </div>
   </div>
 </div>
-<script src="/static/js/check-password.js"></script>
-<script src="/static/js/profile-functions.js"></script>
 <script>
-  window.onload = function(){
+  window.addEventListener('load', function() {
     cur_number = "{{user.profile.phone_number}}";
     input.value = cur_number;
-  }
-</script>
+  });
+</script> 
+<script src="/static/js/check-password.js"></script>
+<script src="/static/js/profile-functions.js"></script>
 
 
 {% endblock %}
