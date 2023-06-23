@@ -45,6 +45,7 @@
                 required
                 type="text"
                 value="{{user.username}}"
+                data-cur-number = "{{user.profile.phone_number}}"
               />
             </div>
           </div>
@@ -65,14 +66,7 @@
           <div class="row row-2 my-3 g-2">
             <label class="my-auto col-md-4 col-12" for="phone_number">Phone number:</label>
             <div class="col-md-8 col-12">
-              <input
-                name="phone_number"
-                id="phone_number"
-                class="form-control"
-                placeholder="Phone number"
-                type="text"
-                value="{{user.profile.phone_number}}"
-              />
+              {% include "phone_input.html" %}
             </div>
           </div>
           <button class="btn btn-primary px-5 py-2 border-0" type="submit" name="profile">
@@ -126,9 +120,14 @@
       </div>
   </div>
 </div>
+<script>
+  window.addEventListener('load', function() {
+    cur_number = "{{user.profile.phone_number}}";
+    input.value = cur_number;
+  });
+</script> 
 <script src="/static/js/check-password.js"></script>
 <script src="/static/js/profile-functions.js"></script>
-
 
 
 {% endblock %}

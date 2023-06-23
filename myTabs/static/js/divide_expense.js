@@ -1,7 +1,7 @@
 window.onload = function () {
   var element = document.getElementById("id_data");
   var tabUsers = JSON.parse(element.getAttribute("data-tab-users"));
-
+  
   var btn1 = document.getElementById("equally-btn");
   var btn2 = document.getElementById("advanced-btn");
 

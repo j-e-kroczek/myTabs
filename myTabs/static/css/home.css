@@ -148,14 +148,13 @@ body {
 
 @media (max-width: 991px) {
   .chart-size {
-    min-height: 100vw !important;
-    width: 100px !important;
+    height: 60vh !important;
   }
 }
 
 @media (min-width: 992px) {
   .chart-size {
-    height: 80% !important;
+    height: 85% !important;
   }
 }
 

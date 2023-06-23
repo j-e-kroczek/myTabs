@@ -3,10 +3,12 @@ from tab.models import Tab, Associating, Belonging
 from django.db.models import Q
 import json
 import itertools
+from typing import List, Tuple, Dict
 import datetime
+from django.contrib.auth.models import User
 
 
-def get_active_tab_users_json(tab_users):
+def convert_list_of_users_to_json(tab_users: List[User]):
     users_data = []
 
     for user in tab_users:
@@ -18,14 +20,14 @@ def get_active_tab_users_json(tab_users):
     return json.dumps(users_data)
 
 
-def get_user_tabs(user):
+def get_user_tabs(user: User):
     user_tabs = []
     for belonging in Belonging.objects.filter(user=user, is_active=True):
         user_tabs.append(belonging.tab)
     return user_tabs
 
 
-def get_tab_users(tab, active=False):
+def get_tab_users(tab:Tab, active:bool=False):
     tab_users = []
     for belonging in Belonging.objects.filter(tab=tab):
         if active and belonging.is_active:
@@ -35,14 +37,7 @@ def get_tab_users(tab, active=False):
     return tab_users
 
 
-def get_user_balance_in_tab(user, tab):
-    if user in get_tab_users(tab):
-        for expense in Expense.objects.filter(tab=tab):
-            if expense.user == user:
-                return expense.amount
-
-
-def get_debts(tab):
+def get_debts(tab: Tab):
     debts = []
     for assosiation in Associating.objects.filter(expense__tab=tab):
         if assosiation.user != assosiation.expense.buyer:
@@ -52,7 +47,7 @@ def get_debts(tab):
     return debts
 
 
-def compute_balances(debts, people):
+def compute_balances(debts:List[Tuple[User, User, float]], people:List[User]):
     if debts == []:
         return {person: 0 for person in people}
     balances = {person: 0 for person in people}
@@ -64,7 +59,7 @@ def compute_balances(debts, people):
     return balances
 
 
-def get_procent_balances(balances):
+def get_procent_balances(balances:Dict[User, float]):
     abs_balances = {person: abs(amount) for person, amount in balances.items()}
     result = []
     max_balance = max(abs_balances.values())
@@ -77,7 +72,7 @@ def get_procent_balances(balances):
     return result
 
 
-def simplify_minflow(debts, people):
+def simplify_minflow(debts:List[Tuple[User, User, float]], people:List[User]):
     balances = compute_balances(debts, people)
     transactions = []
     debtors = {p: b for (p, b) in balances.items() if b < 0}
@@ -107,14 +102,6 @@ def simplify_with_collector(balances):
     ]
 
 
-def show_transactions(transactions):
-    for debtor, creditor, value in transactions:
-        if value > 0:
-            print(f"{debtor} owes {creditor} ${value}")
-        else:
-            print(f"{creditor} owes {debtor} ${-value}")
-
-
 def find_zero_subset(balances):
     for i in range(1, len(balances)):
         for subset in itertools.combinations(balances.items(), i):
@@ -123,7 +110,7 @@ def find_zero_subset(balances):
     return None
 
 
-def run_opt(debts, people):
+def run_opt(debts:List[Tuple[User, User, float]], people:List[User]):
     remaining_set = compute_balances(debts, people)
     subsets = []
     while (subset := find_zero_subset(remaining_set)) is not None:
@@ -147,23 +134,25 @@ def run_opt(debts, people):
     return final_optimal_transactions
 
 
-def get_tab_expenses(tab):
+def get_tab_expenses(tab: Tab):
     result = {}
-    expenses = Expense.objects.filter(tab=tab)
+    expenses = Expense.objects.filter(tab=tab).order_by("-date")
     for expense in expenses:
         result[expense] = Associating.objects.filter(expense=expense)
     return result
 
 
-def get_tab_expense_types(tab):
+def get_tab_expense_types(tab: Tab):
+    if not ExpenseType.objects.filter(name='Reimbursement', is_private=False).exists():
+        ExpenseType.objects.create(name='Reimbursement', is_private=False)
     return ExpenseType.objects.filter(Q(tab=tab) | Q(is_private=False))
 
 
-def check_if_user_is_in_tab(user, tab):
+def check_if_user_is_in_tab(user: User, tab: Tab):
     return Belonging.objects.filter(user=user, tab=tab, is_active=True).exists()
 
 
-def get_amount_of_transaction(debtor, creditor, tab):
+def get_amount_of_transaction(debtor:User, creditor:User, tab:Tab):
     transactions = simplify_minflow(get_debts(tab), get_tab_users(tab))
     for d, c, a in transactions:
         if debtor == d and creditor == c:
@@ -171,11 +160,11 @@ def get_amount_of_transaction(debtor, creditor, tab):
     return None
 
 
-def get_user_associatings(user):
+def get_user_associatings(user: User):
     return Associating.objects.filter(user=user)
 
 
-def get_sum_of_user_expenses_by_type(user):
+def get_sum_of_user_expenses_by_type(user: User):
     associatings = get_user_associatings(user)
     cost_and_type = {}
     for associating in associatings:
@@ -186,14 +175,13 @@ def get_sum_of_user_expenses_by_type(user):
     return cost_and_type
 
 
-def get_sum_of_user_expenses_by_month(user, year):
+def get_sum_of_user_expenses_by_month(user: User, year: int):
     associatings = get_user_associatings(user)
     cost_and_month = {}
     for i in range(1, 13):
         month = datetime.date(1900, i, 1).strftime("%B")
         cost_and_month[month] = 0
 
-    print(year)
     for associating in associatings:
         date = Expense.objects.get(id=associating.expense.id).date
         if str(date.year) == str(year):
@@ -203,7 +191,7 @@ def get_sum_of_user_expenses_by_month(user, year):
     return cost_and_month
 
 
-def get_sum_of_user_expenses_by_month_and_year(user):
+def get_sum_of_user_expenses_by_month_and_year(user:User):
     associatings = get_user_associatings(user)
     cost_and_month = {}
     year_and_months = {}
@@ -219,3 +207,17 @@ def get_sum_of_user_expenses_by_month_and_year(user):
         month = date.month
         year_and_months[year][month] += float(associating.cost)
     return year_and_months
+
+
+def get_user_from_name(name: str):
+    if User.objects.filter(username=name).exists():
+        return User.objects.get(username=name)
+    else:
+        return None
+
+
+def get_user_from_id(user_id: int):
+    if User.objects.filter(pk=user_id).exists():
+        return User.objects.get(pk=user_id)
+    else:
+        return None

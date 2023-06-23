@@ -35,16 +35,7 @@
           />
           <label for="id_email">E-mail</label>
         </div>
-        <div class="form-floating my-3">
-          <input
-            name="phone_number"
-            id="phone_number"
-            class="w-100 form-control"
-            placeholder="Phone number"
-            type="text"
-          />
-          <label for="phone_number">Phone number</label>
-        </div>
+        {% include "phone_input.html"%}
         <div class="form-floating my-3">
           <input
             name="password1"
@@ -78,6 +69,7 @@
           Sign up
         </button>
       </form>
+
       <p class="text-center my-3">
         Already have an account?
         <a class="c-teritary" href="/login">Sign in</a>.
@@ -86,5 +78,9 @@
   </div>
 </div>
 <script src="/static/js/check-password.js"></script>
+<script>
+  input.style.paddingTop = "16px";
+  input.style.paddingBottom = "16px";
+</script>
 
 {% endblock %}

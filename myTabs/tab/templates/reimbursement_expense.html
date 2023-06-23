@@ -48,9 +48,11 @@
             name="type"
             id="id_type"
           >
-            {% for type in expense_types %}
+            {% for type in expense_types %} {% if type.name == "Reimbursement"%}
+            <option selected value="{{type.id}}">{{type.name}}</option>
+            {%else%}
             <option value="{{type.id}}">{{type.name}}</option>
-            {%endfor%}
+            {%endif%} {%endfor%}
           </select>
           <label for="id_type">Type</label>
         </div>
